@@ -28,7 +28,7 @@ Outdir で指定したディレクトリに mp4 ファイルを出力します�
 なおチャプターの継ぎ目は精度に自信がないので余裕をとり、フェードアウト、
 フェードインで誤魔化しています。
 
-##### 実行に必要な環境
+# 実行に必要な環境
 
 * Ubuntu 18.04.1 LTS (多分Unix系ならなんでも)
 * ruby  2.5.1p57
@@ -40,24 +40,25 @@ Outdir で指定したディレクトリに mp4 ファイルを出力します�
   (logoファイルの抽出に使用。矩形領域の切り抜きができれば何でも可)
 
 
-##### インストール
-* ruby
+# インストール
+
+## ruby
 ```sh
 $ sudo apt install ruby
 $ sudo gem install wav-file
 ```
 
-* python
+## python
 ```sh
 $ sudo apt install python-dev python-numpy
 ```
 
-* ffmpeg
+## ffmpeg
 ```sh
 $ sudo apt install ffmpeg
 ```
 
-* opencv  
+## opencv  
 opencv は公式パッケージには無いので、opencvの 公式ページ
 (<https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html>)
 の手順に従ってソースからインストール。
@@ -74,22 +75,28 @@ $ make install
 ```
 
 
-* 本ソフト
+## 本ソフト
 
 1. git-hub からダウンロード
 1. 適当なディレクトリを作りそこに展開する。
 1. const.rb の中身を自分の環境に合わせて、書き換える
 1. 環境変数 PATH に上記のディレクトリを追加する。
 
-##### 前準備
+# 前準備
 
-##### 使用方法
+# 使用方法
 
+```sh
 % mkdir -p $HOME/video/TS
 % mkdir -p $HOME/video/mp4
 % mkdir -p $HOME/video/work
+```
 
 
 
-##### ノウハウ
+# ノウハウ
+
+# 既知の問題点
+
++ 番組宣伝の等の CM に 5秒のものがあるが、それが CM と認識されない。
 
