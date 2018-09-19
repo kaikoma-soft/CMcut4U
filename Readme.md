@@ -77,9 +77,15 @@ $ make install
 
 ## 本ソフト
 
-1. git-hub からダウンロード
-1. 適当なディレクトリを作りそこに展開する。
+1. 適当なディレクトリを作る。( ~/CMcutU  )
+1. そこに git-hub <https://github.com/kaikoma-soft/CMcutU/archive/master.zip>
+   をダウンロードして展開
 1. const.rb の中身を自分の環境に合わせて、書き換える
+
+|Top          | TSファイル等のデータをディレクトリ |
+|CPU_core     | CPUのコア数                        |
+| $ffmpeg_bin | ffmpeg の実行ファイル名            |
+
 1. 環境変数 PATH に上記のディレクトリを追加する。
 
 # 前準備
