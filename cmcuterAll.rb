@@ -52,8 +52,6 @@ end
 #
 def exitProc()
 
-  Common::saveLogoTable( $logotable )
-  
   if test(?f, LockFile )
     File.unlink(LockFile)
   end
@@ -81,11 +79,6 @@ Dir.entries( TSdir ).sort.each do |dir|
   path1 = TSdir + "/" + dir
 
   if test(?d, path1 )
-
-    if $logotable[ dir ] == nil
-      printf("Warning: not found in logoTable (#{dir})\n")
-      Common::initLogoTable( dir, $logotable )
-    end
 
     # skip ファイルがある dir はスキップ
     if test( ?f, path1 + "/" + Skip ) or $logotable[ dir ][ :mp4skip ] == true

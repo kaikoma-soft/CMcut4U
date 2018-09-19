@@ -222,9 +222,6 @@ if File.basename($0) == "cmcuterChk.rb"
     path2 = Outdir + "/" + dir
 
     if test(?d, path1 ) or test(?d, path2 )
-      if logotable[ dir ] == nil
-        Common::initLogoTable( dir, logotable )
-      end
       fp = FilePara.new( path1 )
       fp.setLogoTable( logotable[ dir ], dir )
       
@@ -237,10 +234,7 @@ if File.basename($0) == "cmcuterChk.rb"
           end
         end
       end
-    
-      
     end
   end
 
-  Common::saveLogoTable( logotable )
 end

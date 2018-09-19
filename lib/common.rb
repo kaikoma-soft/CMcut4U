@@ -157,11 +157,25 @@ module Common
       logotable = YAML.load_file( Tablefn )
     end
 
-    # logotable.each_pair do |key,val|
-    #   val[:duration] = num2ary( val[:duration] )
-    #   val[:chapNum] = num2ary( val[:chapNum] )
-    # end
-    
+    Dir.entries( TSdir ).each do |dir|
+      next if dir == "." or dir == ".."
+      path1 = TSdir + "/" + dir
+      if test(?d, path1 )
+        if logotable[ dir ] == nil
+          Common::initLogoTable( dir, logotable )
+        end
+      end
+    end
+
+    logotable.keys.each do |dir|
+      path1 = TSdir + "/" + dir
+      unless test(?d, path1 )
+        logotable.delete( dir )
+      end
+    end
+
+    saveLogoTable( logotable )
+
     logotable
   end
 
