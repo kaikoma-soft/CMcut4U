@@ -92,11 +92,11 @@ $ make install
 
 1. 入力ファイル、出力ファイル、作業用ディレクトリを作成する。  
    ( 例は、Top がそのままの場合 )
-```sh
-% mkdir $HOME/video
-% cd HOME/video
-% mkdir TS mp4 logo work
-```
+    ```sh
+    % mkdir $HOME/video
+    % cd HOME/video
+    % mkdir TS mp4 logo work
+    ```
 
 # ディレクトリ構造
 
@@ -152,23 +152,24 @@ Top
          | j         | 60コマ( 30秒)に進む                        |
          | k         | 60コマ( 30秒)に戻る                        |
          | s         | 現在の画像を保存する。                     |
-    1. 保存した画像の下部（白黒＋強調）した部分のロゴマークを
-        を gimp を使って、矩形領域の切り抜きをする。
+    1. 保存した画像の下部（白黒＋強調）部分のロゴマークを
+        を gimp を使って、最小限の大きさで矩形領域の切り抜き
+        (「ツール」-> 「変形ツール」-> 「切り抜き」)をする。
     1. 「画像」-> 「モード」-> 「グレイスケール」で、グレイスケール化する。
     1. logo ディレクトリの下に、画像を保存する。
 1. logo-table.yaml を書き換える。  
    TS ディレクトリの下に logo-table.yaml が自動作成されているので、
    その中の logofn パラメータを、上で保存したlogo ファイル名に書き換える。
-    ```
-3分クッキング:
-  :logofn: XXXX.png
-  :cmlogofn: 
-  :position: top-right
-  :chapNum: 6
-  :duration: 465
-    
-    ```
+   ```
+      3分クッキング:
+          :logofn: XXXX.png
+          :cmlogofn: 
+          :position: top-right
+          :chapNum: 6
+          :duration: 465
+   ```
 1. 再度 cmcuterAll.rb を実行する。  
+
 
 
 # その他
@@ -176,8 +177,11 @@ Top
 ## 実行コマンドの説明
 
 + cmcuterAll.rb
+
 + cmcuterChk.rb
+
 + createFix.rb
+
 + logoAnalysisSub.py
 
 ## 設定ファイルの説明
