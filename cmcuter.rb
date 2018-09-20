@@ -123,7 +123,7 @@ end
 
 if File.basename($0) == "cmcuter.rb"
   $: << File.dirname( $0 )
-  require 'dataClear.rb'
+  require_relative 'lib/dataClear.rb'
   
   OptionParser.new do |opt|
     opt.on('-d') { $opt[:d] = true }

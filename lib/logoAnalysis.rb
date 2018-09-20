@@ -81,7 +81,7 @@ def runOpencv( logofns, picdir )
   arg = %W( #{dir}/logoAnalysisSub.py --dir #{picdir} )
   logofns.each {|logofn| arg += [ "--logo", logofn ] }
 
-  IO.popen( ["python", *arg ],"r" ) do |fp|
+  IO.popen( [ $python_bin, *arg ],"r" ) do |fp|
     fp.each_line do |line|
       if line =~ /^\#/
         mesg << line
