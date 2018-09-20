@@ -25,8 +25,9 @@ SS_frame_rate = 2
 #
 #  for ffmpeg
 #
-$ffmpeg_bin = ENV["HOME"] + "/bin/ffmpeg-4.0-64bit-static/ffmpeg"
+$ffmpeg_bin = "ffmpeg"
 $ffmpeg_fadetime = 0.5
 $nomalSize  = "1280x720"
 $comSize    = "640x360"
 
+$python_bin = "python"
