@@ -52,7 +52,7 @@ def  ts2mp4( fp, chap )
     w  = c.width
     type = "H"
     type = "C"  if c.type == :CM
-    outf = sprintf("%s/%s/tmp-%02d-%s.mp4", Workdir, fp.base, i, type )
+    outf = sprintf("%s/tmp-%02d-%s.mp4", fp.workd, i, type )
     makePath( outf )
 
     opt = { :outfn  =>  outf,
@@ -109,37 +109,12 @@ def  ts2mp4( fp, chap )
   if mainList.size > 0
     if oldFile?( fp.mp4fn, chap.mtime )
       metafn = chap.makeMeta( fp )
-      fname = sprintf("%s/%s/tmp-main.txt",Workdir,fp.base)
+      fname = sprintf("%s/tmp-main.txt",fp.workd)
       ffmpeg.concat( mainList, fname, fp.mp4fn, metafn )
       mainList << fname
     end
   end
 
-  if $opt[:leaveTMP] == true
-    fn = sprintf("%s/%s/tmp.sh",Workdir, fp.base )
-    File.open( fn,"w") do |ff|
-      ff.printf("set -x \n")
-      cmList.each do |f|
-        if f =~ /\.mp4$/
-          ff.printf("mplayer -really-quiet \"%s\"\n",File.basename(f))
-        end
-      end
-      ff.printf("sleep 1\n")
-      mainList.each do |f|
-        if f =~ /\.mp4$/
-          ff.printf("mplayer -really-quiet \"%s\"\n",File.basename(f))
-        end
-      end
-    end
-  else
-    # 一時ファイルの削除
-    ( cmList + mainList ).each do |f|
-      if FileTest.exist?( f )
-        p "delete #{f}"
-	    #File.delete( f )
-      end
-    end
-  end
   
 end
 

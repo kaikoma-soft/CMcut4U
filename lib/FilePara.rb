@@ -30,7 +30,7 @@ class FilePara
     @chapfn = sprintf("%s/%s/%s.chapList",Outdir,@dir,@base )
     @mp4fn  = sprintf("%s/%s/%s.mp4",Outdir,@dir,@base )
     
-    @workd    = sprintf("%s/%s", Workdir, @base )
+    @workd    = sprintf("%s/%s/%s", Workdir, @dir, @base )
     @cmcutLog = @workd + "/cmcut.log"
     @wavfn    = @workd + "/tmp.wav"
     @picdir   = @workd + "/SS"

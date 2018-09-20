@@ -139,9 +139,9 @@ class CmCuterChk
         wa = $1
       elsif fname =~ /第(\d+)/     # 
         wa = $1
-      elsif fname =~ /(\d+)/
-        wa = $1
       elsif fname =~ /([\-\d\.]+)/
+        wa = $1
+      elsif fname =~ /(\d+)/
         wa = $1
       end
 
