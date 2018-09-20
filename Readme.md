@@ -1,7 +1,7 @@
 
 # 目的
 
-本プログラムは、「PT2等 で録画した mpeg2tsファイルを H.265(HEVC) に変換しつつ同時に CMカット」を Unix 系 OS 上で実行する為のものです。
+本プログラムは、「PT2等 で録画した mpeg2tsファイルを H.265(HEVC) に変換しつつ同時に CMカット」を Linux(Unix 系 OS) 上で実行する為のものです。
 
 # 処理概要
 
@@ -77,7 +77,7 @@ $ make install
 
 ## 本ソフト
 
-1. インストールするディレクトリを決める。( ~/CMcutU  )
+1. インストールするディレクトリを決める。( ~/video  )
 1. そこに git-hub から
     <https://github.com/kaikoma-soft/CMcutU/archive/master.zip>
    をダウンロードして展開
@@ -93,9 +93,9 @@ $ make install
 1. 入力ファイル、出力ファイル、作業用ディレクトリを作成する。  
    ( 例は、Top がそのままの場合 )
 ```sh
-% mkdir -p $HOME/video/TS
-% mkdir -p $HOME/video/mp4
-% mkdir -p $HOME/video/work
+% mkdir $HOME/video
+% cd HOME/video
+% mkdir TS mp4 logo work
 ```
 
 # ディレクトリ構造
@@ -131,18 +131,64 @@ Top
 
 # 使用方法
 
-## logo ファイルの作成
+1. 変換対象の TS ファイルを「TS/番組名」ディレクトリに置く。
+1. cmcuterAll.rb を実行する。  
+   この段階では、スクリーンショットとwav ファイルを作業ディレクトリに作った
+   だけで、エラーで止まる。
+1. logoファイルを作成する。
+    1. スクリーンショットが保存されたディレクトリを指定して
+      logoAnalysisSub.py を実行する。
+    ```sh
+    % logoAnalysisSub.py --dir work/番組名/タイトル/SS
+    ```
 
-## 実行
+    1. スクリーンショット画像が表示されるので、
+       ロゴマークが明瞭な時点の画像を保存する。
 
-# 設定ファイルの説明
+         | キー      | 意味                                       |
+         |-----------|--------------------------------------------|
+         | n         | 次のコマ( 0.5秒)に進む                     |
+         | b         | 前のコマ( 0.5秒)に戻る                     |
+         | j         | 60コマ( 30秒)に進む                        |
+         | k         | 60コマ( 30秒)に戻る                        |
+         | s         | 現在の画像を保存する。                     |
+    1. 保存した画像の下部（白黒＋強調）した部分のロゴマークを
+        を gimp を使って、矩形領域の切り抜きをする。
+    1. 「画像」-> 「モード」-> 「グレイスケール」で、グレイスケール化する。
+    1. logo ディレクトリの下に、画像を保存する。
+1. logo-table.yaml を書き換える。  
+   TS ディレクトリの下に logo-table.yaml が自動作成されているので、
+   その中の logofn パラメータを、上で保存したlogo ファイル名に書き換える。
+    ```
+3分クッキング:
+  :logofn: XXXX.png
+  :cmlogofn: 
+  :position: top-right
+  :chapNum: 6
+  :duration: 465
+    
+    ```
+1. 再度 cmcuterAll.rb を実行する。  
 
-## logo-table.yaml
 
-## fix.yaml
+# その他
 
-## XXXXX.chapList
+## 実行コマンドの説明
 
++ cmcuterAll.rb
++ cmcuterChk.rb
++ createFix.rb
++ logoAnalysisSub.py
+
+## 設定ファイルの説明
+
++ logo-table.yaml
+
++ fix.yaml
+
++ XXXXX.chapList
+
+## logo ファイルの作成詳細
 
 
 # ノウハウ
