@@ -347,7 +347,7 @@ class Silence < Array
         if a.flag == nil or a.flag == :HonPen
           st = a.start + 5.5
           #wt = a.end - st
-          self.insert( n+1, @@t.new( st, a.end, nil,nil,nil,nil,w ) )
+          self.insert( n+1, @@t.new( st, a.end, nil,nil,nil,"insert mark1b",w ) )
           a.end = a.start + 5
           a.flag = :HonPen
           addComment( a, "mark1b EndCard" )

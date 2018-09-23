@@ -31,7 +31,7 @@ def selectBaseDir( )
       printf(" %2d: %s\n",n, fn)
       n += 1
     end
-    printf("対象ディレクトリは？ ")
+    printf("対象ディレクトリ(Num)は？ ")
     ans = STDIN.gets.chomp
     ansi = ans.to_i
     if ansi < 1 or ansi > dirs.size
@@ -78,7 +78,7 @@ def createFix( dir)
       printf(" %2d: %s\n",n, fn)
       n += 1
     end
-    printf("対象ファイルは？ ")
+    printf("対象ファイル(Num)は？ ")
     ans = STDIN.gets.chomp
     ansi = ans.to_i
     if ans == "0"

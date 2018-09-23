@@ -54,17 +54,19 @@ class CmCuterChk
         chapNum = b.chapNum == nil ? "-" : sprintf("%2d",b.chapNum )
         honpen  = b.honpen  == nil ? "-" : sprintf("%6.1f",b.honpen )
 
-        gosa1 = gosa2 = 99999
-        @duration.map do |x|
-          y = b.honpen - x
-          if y.abs < gosa1
-            gosa1 = y.abs
-            gosa2 = y
+        if @duration != nil
+          gosa1 = gosa2 = 99999
+          @duration.map do |x|
+            y = b.honpen - x
+            if y.abs < gosa1
+              gosa1 = y.abs
+              gosa2 = y
+            end
           end
-        end
           
-        if b.honpen != 0 and gosa1 > 1
-          honpen += sprintf("(%+d)",gosa2 )
+          if b.honpen != 0 and gosa1 > 1
+            honpen += sprintf("(%+d)",gosa2 )
+          end
         end
 
         res = b.res == nil ? "" : b.res
@@ -149,7 +151,7 @@ class CmCuterChk
       chap2 = chap.size == 0 ? nil : chap.size
       data.duration = fp.duration
 
-      if fp.chapNum.size > 0
+      if fp.chapNum != nil and fp.chapNum.size > 0
         fc += 1 unless fp.chapNum.include?( chap2 )
         tc += 1
         comment = sprintf("chapNum=%s", fp.chapNum.join(",") )
@@ -160,7 +162,7 @@ class CmCuterChk
         flag = false
         fp.duration.each do |d|
           next if d == nil
-          if hon.between?( d - 3, d + 3 ) == true
+          if hon.between?( d - $opt[:sa], d + $opt[:sa] ) == true
             flag = true
             break
           end
@@ -195,14 +197,15 @@ if File.basename($0) == "cmcuterChk.rb"
     :d => false,                  # debug
     :ng => false,                 # NG only
     :test => false,               # test mode
+    :sa   => 3,                   # 誤差の許容範囲
   }
 
 
   OptionParser.new do |opt|
     opt.on('-d') { $opt[:d] = true }
-    opt.on('-I') { createIgnore() }
     opt.on('--test') { $opt[:test] = true } # test mode
     opt.on('--ng') { $opt[:ng] = true }     # NG only
+    opt.on('--sa n') {|v| $opt[:sa] = v.to_i }     # 誤差の許容範囲
     opt.parse!(ARGV)
   end
 
