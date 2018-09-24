@@ -54,7 +54,7 @@ class CmCuterChk
         chapNum = b.chapNum == nil ? "-" : sprintf("%2d",b.chapNum )
         honpen  = b.honpen  == nil ? "-" : sprintf("%6.1f",b.honpen )
 
-        if @duration != nil
+        if @duration != nil and @duration.size > 0
           gosa1 = gosa2 = 99999
           @duration.map do |x|
             y = b.honpen - x
