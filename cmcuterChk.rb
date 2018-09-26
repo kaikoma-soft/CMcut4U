@@ -97,7 +97,7 @@ class CmCuterChk
     mp4dir = "#{Outdir}/#{dir}"
     data = Epi.new
 
-    if test( ?f,"#{tsdir}/#{Skip}" )
+    if test( ?f,"#{tsdir}/#{Skip}" ) or test( ?f,"#{tsdir}/#{CmcutSkip}" )
       data.err = sprintf("\n# %s Skip\n\n",dir ) if $opt[:ng] == false
       return data
     end
