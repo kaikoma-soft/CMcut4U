@@ -60,7 +60,7 @@ end
 #   TS ファイルと logo ファイルを指定して、CM
 #
 def cmcuter( fp )
-
+  
   if test( ?f, fp.chapfn ) == false
 
     $cmcutLog = fp.cmcutLog
@@ -94,8 +94,6 @@ def cmcuter( fp )
     sdata.marking1a( chapH, chapC, 1 )   # 1pass
     sdata.marking1b( )
     sdata.marking1c( )
-    #sdata.marking1d( )
-    #errLog( sdata.sprint("### 1st adj"))
 
     sdata.marking2( )
     sdata.normalization()
@@ -118,6 +116,21 @@ def cmcuter( fp )
 
   ts2mp4( fp, chap2 )
   
+end
+
+
+#
+#  CMカットせず丸ごと変換する。
+#
+def allConv( fp )
+  ffmpeg = Ffmpeg.new( fp.tsfn )
+  unless test( ?f, fp.mp4fn )
+    opt = { :outfn  =>  fp.mp4fn,
+            :s      => $nomalSize,
+            :vf     => "yadif=0:-1:1",
+          }
+    ffmpeg.ts2x265( opt )
+  end
 end
 
 

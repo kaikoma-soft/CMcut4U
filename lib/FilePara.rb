@@ -12,7 +12,7 @@ class FilePara
   attr_accessor :tspath, :tsfn,:basedir,:chapfn,:mp4fn, :logofn, :cmlogofn
   attr_accessor :dir, :base, :logotablefn, :cmcutLog, :picdir, :wavfn, :workd
   attr_accessor :duration, :chapNum, :position
-  attr_accessor :fixfn, :metafn
+  attr_accessor :fixfn, :metafn, :cutSkip
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -36,6 +36,10 @@ class FilePara
     @picdir   = @workd + "/SS"
     @metafn   = @workd + "/ffmeta.ini"
 
+    @cutSkip = false
+    cutSkipFn = sprintf("%s/%s/%s",@basedir,@dir,CmcutSkip)
+    @cutSkip = true if test( ?f, cutSkipFn )
+    
   end
 
 

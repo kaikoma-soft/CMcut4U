@@ -124,8 +124,13 @@ Dir.entries( TSdir ).sort.each do |dir|
           printf("> %s\n",ts) if $opt[:v] == false
           FileUtils.touch(LockFile)
 
-          t = Benchmark.realtime { cmcuter( fp ) }
-          errLog(sprintf("cmcuter() %.2f Sec\n",t))
+          if fp.cutSkip == true
+            t = Benchmark.realtime { allConv( fp ) }
+            errLog(sprintf("allConv() %.2f Sec\n",t))
+          else
+            t = Benchmark.realtime { cmcuter( fp ) }
+            errLog(sprintf("cmcuter() %.2f Sec\n",t))
+          end
 
           if $opt[:limit] != nil
             if $opt[:limit] < count

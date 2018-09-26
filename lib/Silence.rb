@@ -276,19 +276,17 @@ class Silence < Array
     self.each_index do |n|
       a = self[n]
       next if a.dis == nil or a.start == nil
-      #next if a.start == 0      # 最初は CM 固定
       next if a.flag != nil
       next if self[n+1] == nil  or self[n+1].start == nil
-
-      #s = a.end
-      #e = self[n+1].start
+      next if a.dis < 1
+      
       s = a.mid
       e = a.start + a.dis - 1
       if a.dis > 10             # 余裕があれば境界付近は避ける
         s += 2
         e -= 2
       end
-      if cmChap != nil # CM判定の方が優先
+      if cmChap != nil          # CM判定の方が優先
         cmChap.each do |c|
           if hantei( c, s, e ) == true
             a.flag = :CM
@@ -299,11 +297,18 @@ class Silence < Array
       if a.flag == nil
         mainChap.each do |c|
           if hantei( c, s, e ) == true
-               a.flag = :HonPen 
+            a.flag = :HonPen 
             break
           end
         end
       end
+    end
+
+    # 短い本編のまま EOF の場合は次番組の頭とみなし、CM化
+    a = self[ self.size - 2 ]
+    if a.flag == :HonPen and a.dis < 10
+      a.flag = :CM
+      addComment( a, "mark1a H->C" )
     end
   end
 

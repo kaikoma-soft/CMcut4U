@@ -13,6 +13,7 @@ LockFile  = Top + "/work/.lock"
 LogoDir   = Top + "/logo"
 Tablefn   = TSdir + "/logo-table.yaml"
 Skip      = "mp4.skip"
+CmcutSkip = "cmcut.skip"
 
 CPU_core  = 4
 Fps       = 29.97
