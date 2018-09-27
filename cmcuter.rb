@@ -123,6 +123,9 @@ end
 #  CMカットせず丸ごと変換する。
 #
 def allConv( fp )
+
+  return if $opt[:calcOnly] == true
+  
   ffmpeg = Ffmpeg.new( fp.tsfn )
   unless test( ?f, fp.mp4fn )
     opt = { :outfn  =>  fp.mp4fn,
