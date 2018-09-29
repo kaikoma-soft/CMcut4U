@@ -245,6 +245,18 @@ class Silence < Array
   end
   
 
+  def hantei( c, s, e )
+    cs = c.start
+    ce = c.end
+    if ( ce - cs ) > 5
+      cs += 2
+      ce -= 2
+    end
+    return true if s.between?( cs, ce ) or e.between?( cs, ce )
+    return true if s < cs and ce < e
+    false
+  end
+      
   
   #
   #  チャプター情報から 音声情報に本編の判定を行う。
@@ -254,25 +266,13 @@ class Silence < Array
     #
     # 本編情報,番宣情報を抜き出す
     #
-    mainChap = logoH.conv2Ranges()
+    @mainChap = logoH.conv2Ranges()
     if logoC != nil
-      cmChap = logoC.conv2Ranges()
+      @cmChap = logoC.conv2Ranges()
     else
-      cmChap = nil
+      @cmChap = nil
     end
 
-    def hantei( c, s, e )
-      cs = c.start
-      ce = c.end
-      if ( ce - cs ) > 5
-        cs += 2
-        ce -= 2
-      end
-      return true if s.between?( cs, ce ) or e.between?( cs, ce )
-      return true if s < cs and ce < e
-      false
-    end
-      
     self.each_index do |n|
       a = self[n]
       next if a.dis == nil or a.start == nil
@@ -286,8 +286,8 @@ class Silence < Array
         s += 2
         e -= 2
       end
-      if cmChap != nil          # CM判定の方が優先
-        cmChap.each do |c|
+      if @cmChap != nil          # CM判定の方が優先
+        @cmChap.each do |c|
           if hantei( c, s, e ) == true
             a.flag = :CM
             break
@@ -295,7 +295,7 @@ class Silence < Array
         end
       end
       if a.flag == nil
-        mainChap.each do |c|
+        @mainChap.each do |c|
           if hantei( c, s, e ) == true
             a.flag = :HonPen 
             break
@@ -352,7 +352,18 @@ class Silence < Array
         if a.flag == nil or a.flag == :HonPen
           st = a.start + 5.5
           #wt = a.end - st
-          self.insert( n+1, @@t.new( st, a.end, nil,nil,nil,"insert mark1b",w ) )
+
+          # 分離したものの本編/CM 判定
+          flag = nil
+          b = self[n+1]
+          @mainChap.each do |c|
+            if hantei( c, st, b.start) == true
+              flag = :HonPen 
+              break
+            end
+          end
+          
+          self.insert( n+1, @@t.new( st, a.end, nil,nil,flag,"insert mark1b",w ) )
           a.end = a.start + 5
           a.flag = :HonPen
           addComment( a, "mark1b EndCard" )
