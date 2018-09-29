@@ -23,13 +23,13 @@ require_relative 'lib/dataClear.rb'
 
 OptionParser.new do |opt|
   opt.on('-v') { $opt[:v] = true } # verbose
-  opt.on('-d') { $opt[:d] = true }
-  opt.on('-D') { $opt[:D] = true }
+  opt.on('-d') { $opt[:d] = true } # debug
+  opt.on('-D') { $opt[:D] = true } # debug2
   opt.on('-f') { $opt[:f] = true } # force
   opt.on('--co') { |v| $opt[:calcOnly] = true  }
   opt.on('--ng') { |v| $opt[:ngOnly] = true  }
   opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
-  opt.on('-n n') { |v| $opt[:limit] = v.to_i - 1 }      # limit num
+  opt.on('--sa n') {|v| $opt[:sa] = v.to_i }         # 誤差の許容範囲
   opt.parse!(ARGV)
 end
 
@@ -71,7 +71,6 @@ $logotable = Common::loadLogoTable()
 #
 #  TSファイルの検索 & 実行
 #
-count = 1
 Dir.entries( TSdir ).sort.each do |dir|
 
   next if dir == "." or dir == ".."
@@ -96,49 +95,42 @@ Dir.entries( TSdir ).sort.each do |dir|
         fp = FilePara.new( ts )
         fp.setLogoTable( $logotable[ dir ], dir )
 
-        go = false
-
-        if $opt[:ngOnly] == true and test(?f, fp.chapfn ) == true
-
-          if ( data = CmCuterChk.new.chkTitle( dir, fp ) ) != nil
-            r = data.getStatus( fp.chapfn )
-            if r == "NG"
-              go = true
-              errLog( sprintf("%s is NG", ts))
-              dataClear( fp, 2 )
-            end
-          end
-        else
-          dataClear( fp, $opt[:delLevel] ) 
-        end
-
-        if test(?f, fp.mp4fn ) and test(?f, fp.chapfn )
-          if File.mtime( fp.mp4fn ) < File.mtime( fp.chapfn )
-            go = true
-          end
-        else
-          go = true
-        end
-        
-        if go == true
-          printf("> %s\n",ts) if $opt[:v] == false
-          FileUtils.touch(LockFile)
-
-          if fp.cutSkip == true
+        if fp.cutSkip == true
+          unless test(?f, fp.mp4fn )
             t = Benchmark.realtime { allConv( fp ) }
             errLog(sprintf("allConv() %.2f Sec\n",t))
+          end
+        else
+          go = false
+
+          if $opt[:ngOnly] == true and test(?f, fp.chapfn ) == true
+            if ( data = CmCuterChk.new.chkTitle( dir, fp ) ) != nil
+              r = data.getStatus( fp.chapfn )
+              if r == "NG"
+                go = true
+                errLog( sprintf("%s is NG", ts))
+                dataClear( fp, 2 )
+              end
+            end
           else
+            dataClear( fp, $opt[:delLevel] ) 
+          end
+
+          if test(?f, fp.mp4fn ) and test(?f, fp.chapfn )
+            if File.mtime( fp.mp4fn ) < File.mtime( fp.chapfn )
+              go = true
+            end
+          else
+            go = true
+          end
+        
+          if go == true
+            printf("> %s\n",ts) if $opt[:v] == false
+            FileUtils.touch(LockFile)
+
             t = Benchmark.realtime { cmcuter( fp ) }
             errLog(sprintf("cmcuter() %.2f Sec\n",t))
           end
-
-          if $opt[:limit] != nil
-            if $opt[:limit] < count
-              printf("count linit %d\n",count )
-              exitProc()
-            end
-          end
-          count += 1
         end
       end
     end
