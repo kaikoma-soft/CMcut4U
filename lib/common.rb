@@ -28,6 +28,7 @@ $opt = {
   :delLevel => 0,               # delete level
   :ngOnly => false,             # ng only convert mp4
   :limit  => nil,               # limit num
+  :sa   => 3,                   # 誤差の許容範囲
 }
 
 $max_threads = 3
