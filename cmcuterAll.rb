@@ -27,6 +27,7 @@ OptionParser.new do |opt|
   opt.on('-D') { $opt[:D] = true } # debug2
   opt.on('-f') { $opt[:f] = true } # force
   opt.on('--co') { |v| $opt[:calcOnly] = true  }
+  opt.on('--cm') { |v| $opt[ :cmsize] = true  } # force CM size
   opt.on('--ng') { |v| $opt[:ngOnly] = true  }
   opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
   opt.on('--sa n') {|v| $opt[:sa] = v.to_i }         # 誤差の許容範囲

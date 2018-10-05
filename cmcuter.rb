@@ -145,6 +145,7 @@ if File.basename($0) == "cmcuter.rb"
     opt.on('-d') { $opt[:d] = true }
     opt.on('--co') { |v| $opt[:calcOnly] = true  }
     opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
+    opt.on('--cm') { |v| $opt[ :cmsize] = true  }      # force CM size
     opt.parse!(ARGV)
   end
 
