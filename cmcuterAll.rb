@@ -42,8 +42,10 @@ if test( ?f, LockFile )
   mtime = File.mtime( LockFile )
   now = Time.now
   if mtime > ( now - 3600 * 2)  # 2時間以内
-    printf("Error: Lock file exist\n")
-    exit if $opt[:f] == false
+    if $opt[:f] == false
+      printf("Error: Lock file exist\n")
+      exit 
+    end
   end
 end
 
@@ -124,7 +126,7 @@ Dir.entries( TSdir ).sort.each do |dir|
           else
             go = true
           end
-        
+          
           if go == true
             printf("> %s\n",ts) if $opt[:v] == false
             FileUtils.touch(LockFile)
