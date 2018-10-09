@@ -19,6 +19,7 @@ require_relative 'lib/wavAnalysis.rb'
 # fix ファイルの読み込み
 #
 def  loadFix( fp, chapH, chapC )
+
   fix = []
   if test( ?f, fp.fixfn )
     fix = YAML.load_file( fp.fixfn  )
@@ -76,6 +77,10 @@ def cmcuter( fp )
 
     # logo データ取得
     ( chapH, chapC ) = logoAnalysis( fp, picdir )
+    if chapH.size < 5
+      errLog("Error: The number of chapters is too small.\n")
+      return
+    end
 
     # fix ファイルの読み込み
     ( chapH, chapC ) = loadFix( fp, chapH, chapC )
@@ -127,11 +132,13 @@ def allConv( fp )
   return if $opt[:calcOnly] == true
   
   ffmpeg = Ffmpeg.new( fp.tsfn )
+
   unless test( ?f, fp.mp4fn )
     opt = { :outfn  =>  fp.mp4fn,
             :s      => $nomalSize,
             :vf     => "yadif=0:-1:1",
           }
+    makePath( fp.mp4fn )
     ffmpeg.ts2x265( opt )
   end
 end
