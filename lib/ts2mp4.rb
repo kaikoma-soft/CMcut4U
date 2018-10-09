@@ -15,7 +15,6 @@ require_relative 'logoAnalysis.rb'
 require_relative 'ts2pngwav.rb'
 require_relative 'wavAnalysis.rb'
 
-
 #
 #  chapter 毎に encode してから結合する。
 #
@@ -54,10 +53,12 @@ def  ts2mp4( fp, chap )
     type = "C"  if c.type == :CM
     outf = sprintf("%s/tmp-%02d-%s.mp4", fp.workd, i, type )
     makePath( outf )
+    metaf = outf.sub(/\.mp4/,".ini").sub(/\/tmp/,"/meta-tmp")
 
     opt = { :outfn  =>  outf,
             :s      => $nomalSize,
             :vf     => "yadif=0:-1:1",
+            :meta   => metaf,
           }
     
     if $opt[:fade] == true
@@ -91,6 +92,7 @@ def  ts2mp4( fp, chap )
     
     if oldFile?( outf, chap.mtime )
       ffmpeg.ts2x265( opt,debugFlag )
+      ffmpeg.addMeta( opt )
     end
 
     if $opt[:D] == false

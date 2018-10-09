@@ -15,8 +15,11 @@ class Ffmpeg
       raise "ts file not found (#{ts})"
     end
     @tsfn = ts
-    @logLevel = %w( -loglevel fatal -hide_banner )
-    #@logLevel = %w( -hide_banner )
+    if $opt[:d] == true
+      @logLevel = %w( -hide_banner )
+    else
+      @logLevel = %w( -loglevel fatal -hide_banner )
+    end
     @bin = $ffmpeg_bin
     #@bin = "/usr/local/bin/ffmpeg"
   end
@@ -34,6 +37,36 @@ class Ffmpeg
   end
 
   
+  #
+  #  tmp meta情報ファイルの作成
+  #
+  def makeTmpMeta( metafn, endtime )
+    et = endtime.to_f
+    starttime = 0
+    n = 1
+    buff = [ ";FFMETADATA1","", ]
+    [ et * 0.5, et * 0.8, et * 0.9, et * 0.99, et ].each do |time|
+      if ( ( et - time ) > 5 ) or time == et
+        time = time.to_i
+        buff << "[CHAPTER]"
+        buff << "TIMEBASE=1/1"
+        buff << "START=#{starttime}"
+        buff << "END=#{time}"
+        buff << "title=chapter #{n}"
+        buff << ""
+        starttime = time
+        n += 1
+      end
+    end
+
+    File.open( metafn, "w" ) do |f|
+      buff.each do |s|
+        f.puts(s)
+      end
+    end
+    metafn
+  end
+
 
   #
   #  チャプター毎の mp4 ファイルを連結
@@ -126,12 +159,30 @@ class Ffmpeg
     system2( @bin, *arg )
   end
 
+  #
+  #  メタデータを追加
+  #
+  def addMeta( opt )
+    makeTmpMeta( opt[:meta], opt[:t] )
+    out2 = opt[:outfn].sub(/\.mp4$/,"-tmp.mp4")
+    arg = @logLevel + %W( -y )
+    arg += %W( -i #{opt[:outfn]} )
+    arg += %W( -i #{opt[:meta]} -map_metadata 1 )
+    arg += %W( -codec copy #{out2} )
+    system2( @bin, *arg )
+    if test( ?s, out2 )
+      File.unlink( opt[:outfn] )
+      File.rename( out2, opt[:outfn] )
+    else
+      errLog( "fail addMeta()" )
+    end
+  end
   
   #
   #  x265 に変換
   #
   def ts2x265( opt, debug = false )
-
+      
     arg = @logLevel + %W( -y -analyzeduration 60M -probesize 100M )
     arg += %W( -ss #{opt[:ss]} -t #{opt[:t]} ) if opt[:ss] != nil
     arg += %W( -i #{@tsfn} )
