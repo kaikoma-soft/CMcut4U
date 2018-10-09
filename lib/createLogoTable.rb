@@ -10,7 +10,8 @@ require 'optparse'
 require 'pp'
 require 'yaml'
 
-require 'const.rb'
+$: << File.dirname( $0 )
+require_relative '../const.rb'
   
 $opt = {
   :dump => false,               # create dump data
@@ -22,56 +23,51 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-sdir = ENV["HOME"] + "/video/fromEst"
+sdir = ENV["HOME"] + "/video/epgrec"
 tdir = ENV["HOME"] + "/video/TS"
+ldir = ENV["HOME"] + "/video/logo"
 
-
-list = {}
+list = []
 Dir.foreach( sdir ) do |fname|
-
-  [ 
-    /・181/,
-    /NHK総合1・甲府/,
-    /\s+アニメ/,
-    /＜アニメギルド＞/,
-    /＜ノイタミナ＞/,
-  ].each do |pat|
-    fname.gsub!(pat,'')
-  end
-  fname.gsub!(/(\S)(第)/, '\1 \2')
-  fname.gsub!(/(\S)(\#)/, '\1 \2')
-  fname.gsub!(/▼/," " )
-  
-  if fname =~ /^\d+\s(.*?)\s.*\s(.*?)\.ts$/
-    t=$1
-    b=$2
-    #printf("%-40s %s\n",t,b )
-    list[t] = b
-  end
-    
+  list << fname
 end
 
-#pp list
+if test( ?f, Tablefn )
+  logotable = YAML.load_file( Tablefn )
+end
 
-data = {}
-Dir.foreach( tdir ) do |fname|
-  next if fname == "." or fname == ".."
-  path = tdir + "/" + fname
-  if test( ?d, path )
-    logo = list[fname] != nil ? list[fname] : "?"
-    #printf("%-30s %s\n",fname, logo)
-    data[ fname ] = {
-      logofn:   logo + ".png",
-      cmlogofn: logo + "-CM.png",
-      position: "top-left",
-      calcOnly: true,
-      chapNum:  10,
-      duration: 1440,
-    }
-    
+chflag = false                  # change flag
+logotable.keys.each do |dir|
+  if logotable[ dir ][ :logofn ] == nil
+    sname = nil
+    list.each do |fname|
+      if fname =~ /#{dir}.*?_(.*)\.ts/
+        sname = $1
+        break
+      end
+    end
+    if sname != nil
+      sname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
+      sname.tr!( '０-９','0-9')
+      sname.sub!( /\d+$/,'')
+      path = sprintf("%s/%s.png",ldir,sname)
+      if test( ?f, path )
+        printf("add logo %s  %s\n",dir,sname)
+        logotable[ dir ][ :logofn ] = sname + ".png"
+        chflag = true
+
+        path = sprintf("%s/%s-CM.png",ldir,sname)
+        if test( ?f, path )
+          logotable[ dir ][ :cmlogofn ] = sname + "-CM.png"
+        end
+      end
+    end
   end
 end
 
-File.open( Tablefn,"w") do |fp|
-  fp.puts YAML.dump(data)
+if chflag == true
+  File.open( Tablefn,"w") do |fp|
+    fp.puts YAML.dump(logotable)
+  end
 end
+
