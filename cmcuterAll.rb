@@ -13,13 +13,34 @@ require 'benchmark'
 require 'yaml'
 
 $: << File.dirname( $0 )
-
 require_relative 'cmcuter.rb'
 require_relative 'cmcuterChk.rb'
 require_relative 'const.rb'
 require_relative 'lib/FilePara.rb'
 require_relative 'lib/common.rb'
 require_relative 'lib/dataClear.rb'
+
+
+def usage()
+  pname = File.basename($0)
+    usageStr = <<"EOM"
+Usage: #{pname} [Options]...
+
+  Options:
+  -f          ロックファイルが存在していても実行する。
+  --co        CMカットに必要な計算のみ行う。mp4変換を行わない。
+  --cm        本編画面サイズを $comSize にする。
+  --ng        NG なものだけ対象にする。
+  --dd n      最終・中間結果ファイルを削除する。
+  --sa n　　　誤差の許容範囲を n 秒にする。デフォルトは 3秒
+  --help      Show this help
+
+#{pname} ver #{Version}
+EOM
+    print usageStr
+    exit 1
+end
+
 
 OptionParser.new do |opt|
   opt.on('-v') { $opt[:v] = true } # verbose
@@ -31,6 +52,7 @@ OptionParser.new do |opt|
   opt.on('--ng') { |v| $opt[:ngOnly] = true  }
   opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
   opt.on('--sa n') {|v| $opt[:sa] = v.to_i }         # 誤差の許容範囲
+  opt.on('--help') { usage() }
   opt.parse!(ARGV)
 end
 

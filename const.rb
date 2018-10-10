@@ -23,6 +23,8 @@ WavRatio  = 44100 / 10
 SS_rate       = 1.0 / 2
 SS_frame_rate = 2
 
+Version = "0.1.1"
+
 #
 #  for ffmpeg
 #

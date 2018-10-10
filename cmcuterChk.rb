@@ -12,6 +12,7 @@ require_relative 'lib/Chap.rb'
 require_relative 'lib/FilePara.rb'
 
 
+
 class CmCuterChk
 
   class Epi < Array
@@ -195,6 +196,23 @@ end
 if File.basename($0) == "cmcuterChk.rb"
   $: << File.dirname( $0 )
 
+  def usage()
+    pname = File.basename($0)
+    usageStr = <<"EOM"
+Usage: #{pname} [Options]...
+
+  Options:
+  -f          ロックファイルが存在していても実行する。
+  --ng        NG なものだけ対象にする。
+  --sa n　　　誤差の許容範囲を n 秒にする。デフォルトは 3秒
+  --help      Show this help
+
+#{pname} ver #{Version}
+EOM
+    print usageStr
+    exit 1
+end
+
   $opt = {
     :d => false,                  # debug
     :ng => false,                 # NG only
@@ -202,20 +220,16 @@ if File.basename($0) == "cmcuterChk.rb"
     :sa   => 3,                   # 誤差の許容範囲
   }
 
-
   OptionParser.new do |opt|
     opt.on('-d') { $opt[:d] = true }
-    opt.on('--test') { $opt[:test] = true } # test mode
     opt.on('--ng') { $opt[:ng] = true }     # NG only
     opt.on('--sa n') {|v| $opt[:sa] = v.to_i }     # 誤差の許容範囲
+    opt.on('--help') { usage() }
     opt.parse!(ARGV)
   end
 
   logotable = Common::loadLogoTable()
 
-  if $opt[:test] == true 
-    Outdir += ".test"
-  end
   
   #
   #  対象番組の検索
