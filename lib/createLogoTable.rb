@@ -29,6 +29,8 @@ ldir = ENV["HOME"] + "/video/logo"
 
 list = []
 Dir.foreach( sdir ) do |fname|
+  fname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
+  fname.tr!( '０-９！－','0-9!-')
   list << fname
 end
 
@@ -39,6 +41,7 @@ end
 chflag = false                  # change flag
 logotable.keys.each do |dir|
   if logotable[ dir ][ :logofn ] == nil
+    pp dir
     sname = nil
     list.each do |fname|
       if fname =~ /#{dir}.*?_(.*)\.ts/
@@ -47,20 +50,30 @@ logotable.keys.each do |dir|
       end
     end
     if sname != nil
-      sname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
-      sname.tr!( '０-９','0-9')
-      sname.sub!( /\d+$/,'')
-      path = sprintf("%s/%s.png",ldir,sname)
-      if test( ?f, path )
-        printf("add logo %s  %s\n",dir,sname)
-        logotable[ dir ][ :logofn ] = sname + ".png"
-        chflag = true
+      sname.sub!( /[・\d]+$/,'')
 
-        path = sprintf("%s/%s-CM.png",ldir,sname)
-        if test( ?f, path )
-          logotable[ dir ][ :cmlogofn ] = sname + "-CM.png"
+      paths = []
+      paths << sprintf("%s.png",sname)
+      paths << sprintf("%s/HON.png",sname)
+      paths.each do |path|
+        if test( ?f, ldir + "/" + path )
+          logotable[ dir ][ :logofn ] = path
+          printf("add logo %s  %s\n",dir,path)
+          chflag = true
+
+          paths = []
+          paths << sprintf("%s-CM.png",sname)
+          paths << sprintf("%s/CM.png",sname)
+          paths.each do |path|
+            if test( ?f, ldir + "/" + path )
+              logotable[ dir ][ :cmlogofn ] = path
+              printf("add logo %s  %s\n",dir,path)
+            end
+          end
+          break
         end
       end
+
     end
   end
 end
