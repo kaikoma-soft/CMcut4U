@@ -71,13 +71,13 @@ def cmcuter( fp )
     ( wavfn, picdir ) = ts2pngwav( fp )
 
     if fp.logofn == nil or fp.logofn.size == 0
-      errLog("Warning: not found in logofile(#{fp.logofn})\n")
+      errLog("Warning: not found in logofile\n")
       return
     end
 
     # logo データ取得
     ( chapH, chapC ) = logoAnalysis( fp, picdir )
-    if chapH.size < 5
+    if chapH.size < 5 and chapH.duration > 600
       errLog("Error: The number of chapters is too small.\n")
       return
     end

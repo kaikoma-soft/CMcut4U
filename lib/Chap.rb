@@ -45,6 +45,7 @@ class Chap < Array
 
   def calcWidth()
     total = 0
+    honpen = 0
     self.each_index do |i|
       if self[i+1] != nil
         next if self[i+1].time == nil
@@ -55,10 +56,12 @@ class Chap < Array
           raise
         end
         total += self[i].width
+        honpen += self[i].width if self[i].type == :HonPen
       end
     end
 
-    @duration = total 
+    @duration = total
+    @honpen = honpen
   end
 
   def getLastTime()
