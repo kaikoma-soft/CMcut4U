@@ -61,11 +61,11 @@ def cmcuter( fp )
 
     sdata.marking2( )
     sdata.normalization()
-    errLog( sdata.sprint("### 1st adj"))
+    #errLog( sdata.sprint("### 1st adj"))
 
     sdata.setCmRange( )
     sdata.marking3( )
-    errLog( sdata.sprint("### 2nd adj"))
+    errLog( sdata.sprint("### adj chapter "))
 
     chap2 = sdata.createChap( )
     errLog( chap2.sprint("### final Chapter List" ))

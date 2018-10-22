@@ -273,7 +273,7 @@ def calc( para, parent )
       $para[:sdata].each_index do |i|
         diff = true if $para[:sdata][i][6] != $newFix[i][:type]
       end
-      p diff
+      #p diff
       if diff == true
         FixFile.new.mergeFix( fp, $newFix )
         statmesg( "fix file saved" )
@@ -346,7 +346,7 @@ end
 def cleanUp()
   if $para[:fifo] != nil
     if FileTest.pipe?( $para[:fifo] )
-      pp "unlink #{$para[:fifo]}"
+      #pp "unlink #{$para[:fifo]}"
       File.unlink( $para[:fifo] )
     end
     $para[:fifo] = nil
