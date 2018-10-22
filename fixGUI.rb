@@ -54,11 +54,7 @@ vbox1.pack_start(dummy, false, false, 0)
 #
 #  TSファイル選択
 # 
-#hbox1 = Gtk::HBox.new(false, 0)
-
-label = Gtk::Label.new("対象TSファイル：")
 frame1 = Gtk::Frame.new("対象TSファイル")
-#hbox1.add(label)
 vbox1.pack_start(frame1, false, false, 0)
 
 # vbox2
@@ -76,7 +72,6 @@ vbox2.add(cb1)
 
 # TS ファイル選択
 cb2 = Gtk::ComboBox.new
-#cb2.append_text( "-" )
 vbox2.add(cb2)
 
 cb1.signal_connect("changed") do |widget|
@@ -107,8 +102,6 @@ end
 
 hbox2 = Gtk::HBox.new(false, 0)
 vbox1.pack_start(hbox2, false, false, 10)
-#vbox1.add(hbox2)
-
 
 
 
@@ -218,10 +211,6 @@ $para[:dr] = Gtk::Label.new("-") # 時間・結果
 tbl.attach( $para[:dr], 3, 4, 2, 3, *arg )
 vbox1.pack_start(tbl, false, false, 10)
 
-
-
-
-#vbox1.pack_start(Gtk::HSeparator.new, false, true, 0)
 
 
 $status_bar = Gtk::Statusbar.new
