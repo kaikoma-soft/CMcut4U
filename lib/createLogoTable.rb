@@ -14,12 +14,11 @@ $: << File.dirname( $0 )
 require_relative '../const.rb'
   
 $opt = {
-  :dump => false,               # create dump data
-  :restore => nil,              # read dump data
+  :d => false,                  # debug
 }
 
 OptionParser.new do |opt|
-  opt.on('-dump') { $opt[:dump] = true }
+  opt.on('-d') { $opt[:d] = true }
   opt.parse!(ARGV)
 end
 
@@ -41,7 +40,7 @@ end
 chflag = false                  # change flag
 logotable.keys.each do |dir|
   if logotable[ dir ][ :logofn ] == nil
-    pp dir
+    pp dir if $opt[:d] == true
     sname = nil
     list.each do |fname|
       if fname =~ /#{dir}.*?_(.*)\.ts/

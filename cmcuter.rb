@@ -13,49 +13,7 @@ require_relative 'lib/logoAnalysis.rb'
 require_relative 'lib/ts2mp4.rb'
 require_relative 'lib/ts2pngwav.rb'
 require_relative 'lib/wavAnalysis.rb'
-
-
-#
-# fix ファイルの読み込み
-#
-def  loadFix( fp, chapH, chapC )
-
-  fix = []
-  if test( ?f, fp.fixfn )
-    fix = YAML.load_file( fp.fixfn  )
-  end
-
-  fix2 = []
-  fix.each do |r|
-    if r[0].downcase == "all" or r[0] == fp.base or r[0] == fp.base + ".ts"
-      if r[1] =~ /(\d+):(\d+)/
-        time = $1.to_i * 60 + $2.to_i
-      else
-        time = r[1].to_f
-      end
-      if r[2] =~ /^h/i
-        chapH.insertData( time )
-      elsif r[2] =~ /^c/i
-        if chapC == nil
-          chapC = Chap.new
-          chapC.setcmDataFlag()
-          chapC.add( 0, 0 )
-          chapC.add( chapH.getLastTime(), -1 )
-        end
-        chapC.insertData( time )
-      end
-      fix2 << sprintf("%s : %d : %s",r[0],time,r[2])
-    end
-  end
-
-  if fix2.size > 0
-    errLog("-" * 10 + "  fix data  " + "-" * 10 )
-    fix2.each { |tmp| errLog(tmp) }
-    errLog("-" * 32 )
-  end
-
-  [ chapH, chapC ]
-end
+require_relative 'lib/FixFile.rb'
 
 #
 #   TS ファイルと logo ファイルを指定して、CM
@@ -72,18 +30,19 @@ def cmcuter( fp )
 
     if fp.logofn == nil or fp.logofn.size == 0
       errLog("Warning: not found in logofile\n")
-      return
+      return nil
     end
 
     # logo データ取得
     ( chapH, chapC ) = logoAnalysis( fp, picdir )
     if chapH.size < 5 and chapH.duration > 600
       errLog("Error: The number of chapters is too small.\n")
-      return
+      return nil
     end
 
     # fix ファイルの読み込み
-    ( chapH, chapC ) = loadFix( fp, chapH, chapC )
+    ff = FixFile.new()
+    ( chapH, chapC ) = ff.loadFix( fp, chapH, chapC )
 
     errLog(chapH.sprint("### Honpen Chapter from logo data"))
     if chapC != nil
@@ -117,7 +76,7 @@ def cmcuter( fp )
     chap2.restore( fp.chapfn )
   end
 
-  return if $opt[:calcOnly] == true
+  return sdata if $opt[:calcOnly] == true
 
   ts2mp4( fp, chap2 )
   
@@ -163,13 +122,15 @@ if File.basename($0) == "cmcuter.rb"
   end
 
   ARGV.each do |fn|
-    fp = FilePara.new( fn )
-    fp.setLogoTable( logotable[ fp.dir ], fp.dir )
-    $cmcutLog = fp.cmcutLog
-
-    dataClear( fp, $opt[:delLevel] )
+    if test( ?f, fn )
+      fp = FilePara.new( fn )
+      fp.setLogoTable( logotable[ fp.dir ], fp.dir )
+      $cmcutLog = fp.cmcutLog
+      
+      dataClear( fp, $opt[:delLevel] )
   
-    printf("cmcuter() %.2f Sec\n", Benchmark.realtime { cmcuter( fp ) })
+      printf("cmcuter() %.2f Sec\n", Benchmark.realtime { cmcuter( fp ) })
+    end
   end
   
 end

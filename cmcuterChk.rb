@@ -142,6 +142,8 @@ class CmCuterChk
         wa = $1
       elsif fname =~ /第(\d+)/     # 
         wa = $1
+      elsif fname =~ /\#(\d+)/     # 
+        wa = $1
       elsif fname =~ /(第[一二三四五六七八九十]+)/     # 
         wa = $1
       elsif fname =~ /([\-\d\.]+)/

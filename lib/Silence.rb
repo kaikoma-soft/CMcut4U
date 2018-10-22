@@ -10,6 +10,8 @@ require_relative 'Chap.rb'
 #
 class Silence < Array
 
+  attr_reader :lastframe
+  
   @@t = Struct.new(:start,      # 開始
                    :end,        # 終了
                    :mid,        # 中央
@@ -141,7 +143,6 @@ class Silence < Array
     #
     # 15,30,60秒以下は,前後の時間と足して CM時間ならば 1本にまとめる
     #
-    #[ 15, 30, 45, 60, 90, 120 ].each do |target|
     [ 135, 120, 90, 60, 45, 30, 15 ].each do |target|
       self.each_index do |i|
         a = self[i]
@@ -257,21 +258,27 @@ class Silence < Array
     false
   end
       
+
+  #
+  # 本編情報,CM情報を比較しやすい形に変換
+  #
+  def conv2Ranges( logoH, logoC )
+    @mainChap = nil
+    @cmChap = nil
+    if logoH != nil
+      @mainChap = logoH.conv2Ranges()
+    end
+    if logoC != nil
+      @cmChap = logoC.conv2Ranges()
+    end
+  end
   
   #
   #  チャプター情報から 音声情報に本編の判定を行う。
   #
   def marking1a( logoH, logoC, pass = 1 )
 
-    #
-    # 本編情報,番宣情報を抜き出す
-    #
-    @mainChap = logoH.conv2Ranges()
-    if logoC != nil
-      @cmChap = logoC.conv2Ranges()
-    else
-      @cmChap = nil
-    end
+    conv2Ranges( logoH, logoC )
 
     self.each_index do |n|
       a = self[n]

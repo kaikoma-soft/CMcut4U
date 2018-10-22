@@ -92,7 +92,7 @@ def  ts2mp4( fp, chap )
     
     if oldFile?( outf, chap.mtime )
       ffmpeg.ts2x265( opt,debugFlag )
-      ffmpeg.addMeta( opt )
+      #ffmpeg.addMeta( opt )
     end
 
     if $opt[:D] == false

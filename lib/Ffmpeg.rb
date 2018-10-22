@@ -145,7 +145,13 @@ class Ffmpeg
           %W( -vf crop=#{opt[:w]}:#{opt[:h]}:#{opt[:x2]}:#{opt[:y2]} ) +
           %W( -vcodec mjpeg -y #{opt[:picdir]}/ss_%05d.jpg )
     system2( @bin, *arg )
-      
+
+    # check
+    unless test( ?f, opt[:picdir] + "/ss_00001.jpg" )
+      mesg = "jpg file can't create"
+      errLog(mesg)
+      raise mesg
+    end
   end
 
   #
