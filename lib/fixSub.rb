@@ -42,25 +42,19 @@ end
 
 
 #
-# status bar メッセージ表示
+# 表のタイトル表示
 #
 def setTitle( tbl )
   title = %w( チャプター 無音期間(秒) ←(時分秒) 間隔(秒) 種別 コメント fix)
+  arg = [ Gtk::EXPAND,Gtk::FILL, 1, 1 ]
   title.each_with_index do |str,j|
     label = Gtk::Label.new( str )
-    label.set_justify(Gtk::JUSTIFY_LEFT)
-    eventbox = Gtk::EventBox.new.add(label)
-    tbl.attach_defaults( eventbox, j, j+1, 0, 1 )
+#    label.set_justify(Gtk::JUSTIFY_LEFT)
+#    eventbox = Gtk::EventBox.new.add(label)
+    tbl.attach( label, j, j+1, 0, 1, *arg ) #, *$tblarg 
   end
 end
 
-
-#
-#  期待値の書き換え
-#
-def setExp()
-
-end
 
 
 #
@@ -185,7 +179,6 @@ def calcDisp( fp, sdata )
   setTitle( tbl )
   #$lbw = []
   $newFix = []
-  arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
   sdata2.each_with_index do |a,i|
     style = $style[:bg]
     style = $style[:br] if a[4] =~ /CM/
@@ -214,10 +207,10 @@ def calcDisp( fp, sdata )
       if j == 0
         if chapSpan[str][:start] == i
           k = i + 2 + ( chapSpan[str][:end] - chapSpan[str][:start] )
-          tbl.attach( eventbox, j, j+1, i+1, k, *arg )
+          tbl.attach( eventbox, j, j+1, i+1, k, *$tblarg )
         end
       else
-        tbl.attach( eventbox, j, j+1, i+1, i+2, *arg )
+        tbl.attach( eventbox, j, j+1, i+1, i+2, *$tblarg )
       end
     end
   end

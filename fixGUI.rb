@@ -96,7 +96,6 @@ cb2.signal_connect("changed") do |widget|
     $para[ :tspath ] = sprintf("%s/%s/%s",TSdir,dir,file)
     $para[ :sdata ] = nil
     $newFix = nil
-    setExp()
   end
 end
 
@@ -160,12 +159,13 @@ tble.style = $style[:gg]
 $para[:table] = tbl
 $para[:tablee] = tble
 $para[:sw] = sw
+$tblarg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
   
 setTitle( tbl )
 
 arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
 0.upto(6).each do |r|
-  0.upto(30).each do |c|
+  1.upto(30).each do |c|
     if c % 2 > 0
       style = $style[:bg]
     else
@@ -175,7 +175,7 @@ arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
     eventbox = Gtk::EventBox.new.add(label)
     eventbox.style = style
     #tbl.attach_defaults( eventbox, r, r+1, c, c+1 )
-    tbl.attach( eventbox, r, r+1, c, c+1, *arg )
+    tbl.attach( eventbox, r, r+1, c, c+1, *$tblarg )
   end
 end
 
@@ -188,27 +188,27 @@ sw.add_with_viewport(tble)
 arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
 tbl = Gtk::Table.new(2, 3, true)
 label = Gtk::Label.new("期待値")
-tbl.attach( label, 1, 2, 0, 1, *arg )
+tbl.attach( label, 1, 2, 0, 1, *$tblarg )
 label = Gtk::Label.new("計算値")
-tbl.attach( label, 2, 3, 0, 1, *arg )
+tbl.attach( label, 2, 3, 0, 1, *$tblarg )
 label = Gtk::Label.new("結果")
-tbl.attach( label, 3, 4, 0, 1, *arg )
+tbl.attach( label, 3, 4, 0, 1, *$tblarg )
 label = Gtk::Label.new("チャプター")
-tbl.attach( label, 0, 1, 1, 2, *arg )
+tbl.attach( label, 0, 1, 1, 2, *$tblarg )
 label = Gtk::Label.new("時間")
-tbl.attach( label, 0, 1, 2, 3, *arg )
+tbl.attach( label, 0, 1, 2, 3, *$tblarg )
 $para[:ce] = Gtk::Label.new("-") # チャプター・期待値
-tbl.attach( $para[:ce], 1, 2, 1, 2, *arg )
+tbl.attach( $para[:ce], 1, 2, 1, 2, *$tblarg )
 $para[:de] = Gtk::Label.new("-") # 時間・期待値
-tbl.attach( $para[:de], 1, 2, 2, 3, *arg )
+tbl.attach( $para[:de], 1, 2, 2, 3, *$tblarg )
 $para[:cc] = Gtk::Label.new("-") # チャプター・計算値
-tbl.attach( $para[:cc], 2, 3, 1, 2, *arg )
+tbl.attach( $para[:cc], 2, 3, 1, 2, *$tblarg )
 $para[:dc] = Gtk::Label.new("-") # 時間・計算値
-tbl.attach( $para[:dc], 2, 3, 2, 3, *arg )
+tbl.attach( $para[:dc], 2, 3, 2, 3, *$tblarg )
 $para[:cr] = Gtk::Label.new("-") # チャプター・結果
-tbl.attach( $para[:cr], 3, 4, 1, 2, *arg )
+tbl.attach( $para[:cr], 3, 4, 1, 2, *$tblarg )
 $para[:dr] = Gtk::Label.new("-") # 時間・結果
-tbl.attach( $para[:dr], 3, 4, 2, 3, *arg )
+tbl.attach( $para[:dr], 3, 4, 2, 3, *$tblarg )
 vbox1.pack_start(tbl, false, false, 10)
 
 
