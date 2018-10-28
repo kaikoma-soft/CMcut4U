@@ -78,7 +78,7 @@ def  ts2mp4( fp, chap )
 
     debugFlag = false
     if $opt[:cmsize] == true or type =~ /^C/
-      opt[ :s ] = $comSize
+      opt[ :s ] = $cmSize
       debugFlag = true
     elsif prob[:width].to_i < 1280
       opt[ :s ] = sprintf("%sx%s ",prob[:width],prob[:height])

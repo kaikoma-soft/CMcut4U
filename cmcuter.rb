@@ -111,8 +111,6 @@ def cmcutCalc( fp, force = false )
   end
 
   return [ chap2, sdata ]
-
-  
 end
 
 

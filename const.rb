@@ -6,7 +6,6 @@
 #   定数定義
 #
 Top       = ENV["HOME"] + "/video"
-#Top       = ENV["HOME"] + "/video/tmp3"
 TSdir     = Top + "/TS"
 Outdir    = Top + "/mp4"
 Workdir   = Top + "/work"
@@ -29,9 +28,9 @@ Version = "0.3.0"
 #
 #  for ffmpeg
 #
-$ffmpeg_bin = "ffmpeg"
+$ffmpeg_bin      = "ffmpeg"
 $ffmpeg_fadetime = 0.5
-$nomalSize  = "1280x720"
-$comSize    = "640x360"
+$nomalSize       = "1280x720"
+$cmSize          = "640x360"
 
-$python_bin = "python"
+$python_bin      = "python"

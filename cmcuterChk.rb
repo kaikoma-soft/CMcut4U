@@ -140,11 +140,11 @@ class CmCuterChk
       wa = fname
       if fname =~ /(\d+)$/     # 
         wa = $1
+      elsif fname =~ /第([一二三四五六七八九十]+)(話|番)/     # 
+        wa = $1
       elsif fname =~ /第(\d+)/     # 
         wa = $1
       elsif fname =~ /\#(\d+)/     # 
-        wa = $1
-      elsif fname =~ /(第[一二三四五六七八九十]+)/     # 
         wa = $1
       elsif fname =~ /([\-\d\.]+)/
         wa = $1
@@ -204,7 +204,6 @@ if File.basename($0) == "cmcuterChk.rb"
 Usage: #{pname} [Options]...
 
   Options:
-  -f          ロックファイルが存在していても実行する。
   --ng        NG なものだけ対象にする。
   --sa n　　　誤差の許容範囲を n 秒にする。デフォルトは 3秒
   --help      Show this help

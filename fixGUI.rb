@@ -42,7 +42,6 @@ window = Gtk::Window.new
 window.name = "main window"
 
 window.set_default_size(800, 600)
-#window.move(20, 20)
 window.signal_connect("destroy"){ cleanUp(); Gtk.main_quit  }
 
 # vbox1
@@ -160,9 +159,11 @@ $para[:table] = tbl
 $para[:tablee] = tble
 $para[:sw] = sw
 $tblarg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
-  
-setTitle( tbl )
 
+#
+#  空状態の表作成
+# 
+setTitle( tbl )
 arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
 0.upto(6).each do |r|
   1.upto(30).each do |c|
@@ -174,7 +175,6 @@ arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
     label = Gtk::Label.new( "" ) # sprintf("%d-%d",r,c)
     eventbox = Gtk::EventBox.new.add(label)
     eventbox.style = style
-    #tbl.attach_defaults( eventbox, r, r+1, c, c+1 )
     tbl.attach( eventbox, r, r+1, c, c+1, *$tblarg )
   end
 end

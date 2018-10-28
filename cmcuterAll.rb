@@ -76,7 +76,6 @@ end
 #  終了処理
 #
 def exitProc()
-
   if test(?f, LockFile )
     File.unlink(LockFile)
   end
