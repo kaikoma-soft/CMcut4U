@@ -249,7 +249,7 @@ def calc( para, parent )
       $para[:de].text= fp.duration.join(",")
     end
     
-    dataClear( fp, 2 )
+    #dataClear( fp, 2 )
 
     # ダイアログの表示
     d = Gtk::Dialog.new( nil, parent, Gtk::Dialog::MODAL)
@@ -275,7 +275,7 @@ def calc( para, parent )
     
     t = Thread.new do           # 待機スレッド
       t.abort_on_exception = true
-      sdata = cmcuter( fp )
+      ( chap, sdata ) = cmcutCalc( fp, true )
       statmesg( "計算終了" )
       d.destroy
 
@@ -358,7 +358,7 @@ def mpsend( cmd )
     $para[:mpfp].puts( cmd )
     $para[:mpfp].flush
   else
-    puts( "error fp is nil" )
+    statmesg( "Error: mpv not exec" )
   end
 end
 
@@ -371,8 +371,8 @@ def seekMpv( n )
   if $para[:sdata] != nil
     sec = $para[:sdata][n][1].split[0].to_f - 1
     sec = 0 if sec < 0
-    mpsend("seek #{sec.to_i} absolute\n")
     statmesg("seek #{sec.to_i} sec"  )
+    mpsend("seek #{sec.to_i} absolute\n")
   end
   
 end

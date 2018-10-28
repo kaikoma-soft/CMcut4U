@@ -12,7 +12,7 @@ class FilePara
   attr_accessor :tspath, :tsfn,:basedir,:chapfn,:mp4fn, :logofn, :cmlogofn
   attr_accessor :dir, :base, :logotablefn, :cmcutLog, :picdir, :wavfn, :workd
   attr_accessor :duration, :chapNum, :position
-  attr_accessor :fixfn, :metafn, :cutSkip
+  attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -27,19 +27,22 @@ class FilePara
     @logotablefn = sprintf("%s/logo-table.yaml",@basedir)
     @fixfn  = sprintf("%s/%s/fix.yaml",@basedir,@dir)
 
-    @chapfn = sprintf("%s/%s/%s.chapList",Outdir,@dir,@base )
+    @chapfnOld = sprintf("%s/%s/%s.chapList",Outdir,@dir,@base )
     @mp4fn  = sprintf("%s/%s/%s.mp4",Outdir,@dir,@base )
     
-    @workd    = sprintf("%s/%s/%s", Workdir, @dir, @base )
-    @cmcutLog = @workd + "/cmcut.log"
-    @wavfn    = @workd + "/tmp.wav"
-    @picdir   = @workd + "/SS"
-    @metafn   = @workd + "/ffmeta.ini"
+    @workd     = sprintf("%s/%s/%s", Workdir, @dir, @base )
+    @cmcutLog  = @workd + "/cmcut.log"
+    @wavfn     = @workd + "/tmp.wav"
+    @picdir    = @workd + "/SS"
+    @metafn    = @workd + "/ffmeta.ini"
+    @chapHash  = @workd + "/chapList.sha"
+    @chapfn    = @workd + "/chapList.txt"
 
     @cutSkip = false
     cutSkipFn = sprintf("%s/%s/%s",@basedir,@dir,CmcutSkip)
     @cutSkip = true if test( ?f, cutSkipFn )
-    
+
+    #moveChapList()
   end
 
 
@@ -100,6 +103,30 @@ class FilePara
     @position = lt[ :position ]
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]
+  end
+
+  #
+  #  chapList を mp4 の下から work へ移動する。
+  #
+  def moveChapList()
+    if test( ?f, @chapfnOld )
+      unless test( ?f, @chapfn )
+        dir = File.dirname( @chapfn )
+        if test( ?d, dir )
+          hash = fileDigest( @chapfnOld )
+          saveDigest( @chapHash, hash )
+          File.rename( @chapfnOld, @chapfn )
+          printf("move %s\n",@chapfnOld )
+        end
+      end
+    end
+    if test( ?f, @chapfn )
+      unless test( ?f, @chapHash )
+        hash = fileDigest( @chapfn )
+        saveDigest( @chapHash, hash )
+        printf("make hash %s\n", @chapHash )
+      end
+    end
   end
   
 end

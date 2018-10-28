@@ -117,6 +117,11 @@ def  ts2mp4( fp, chap )
     end
   end
 
+  #
+  # chapList のhash値を保存
+  #
+  hash = fileDigest( fp.chapfn )
+  saveDigest( fp.chapHash,hash )
   
 end
 

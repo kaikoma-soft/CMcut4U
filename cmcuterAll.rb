@@ -126,13 +126,10 @@ Dir.entries( TSdir ).sort.each do |dir|
             errLog(sprintf("allConv() %.2f Sec\n",t))
           end
         else
-          go = false
-
           if $opt[:ngOnly] == true and test(?f, fp.chapfn ) == true
             if ( data = CmCuterChk.new.chkTitle( dir, fp ) ) != nil
               r = data.getStatus( fp.chapfn )
               if r == "NG"
-                go = true
                 errLog( sprintf("%s is NG", ts))
                 dataClear( fp, 2 )
               end
@@ -141,20 +138,19 @@ Dir.entries( TSdir ).sort.each do |dir|
             dataClear( fp, $opt[:delLevel] ) 
           end
 
-          if test(?f, fp.mp4fn ) and test(?f, fp.chapfn )
-            if File.mtime( fp.mp4fn ) < File.mtime( fp.chapfn )
-              go = true
-            end
-          else
-            go = true
-          end
-          
-          if go == true
+          if ! test(?f, fp.mp4fn ) or goCalc?( fp ) == true
+
             printf("> %s\n",ts) if $opt[:v] == false
             FileUtils.touch(LockFile)
 
-            t = Benchmark.realtime { cmcuter( fp ) }
-            errLog(sprintf("cmcuter() %.2f Sec\n",t))
+            chap = nil
+            t = Benchmark.realtime { ( chap, sdata ) = cmcutCalc( fp ) }
+            errLog(sprintf("cmcutCalc() %.2f Sec\n",t))
+
+            if $opt[:calcOnly] == false
+              t = Benchmark.realtime { ts2mp4( fp, chap ) }
+              errLog(sprintf("ts2mp4() %.2f Sec\n",t))
+            end
           end
         end
       end

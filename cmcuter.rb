@@ -15,13 +15,46 @@ require_relative 'lib/ts2pngwav.rb'
 require_relative 'lib/wavAnalysis.rb'
 require_relative 'lib/FixFile.rb'
 
+
+
+#
+#  CMカット計算を実行するかどうかの判定
+#
+def goCalc?( fp )
+
+  # chapList が存在しているか？
+  if test(?f, fp.chapfn )
+    if test(?f, fp.mp4fn )
+      if File.mtime( fp.mp4fn ) < File.mtime( fp.chapfn )
+        # 現在のchapList のハッシュと過去のは一致するか？
+        hash_now = fileDigest( fp.chapfn )
+        hash_old = loadDigest( fp.chapHash )
+        if hash_old == nil
+          errLog("#old hash not found") if $opt[:d] == true
+          return true
+        end
+        unless hash_old == hash_now
+          errLog("#hash diff") if $opt[:d] == true
+          return true
+        end
+      end
+    end
+  else
+    errLog("#chapList not found") if $opt[:d] == true
+    return true
+  end
+  return false
+end
+
+
 #
 #   TS ファイルと logo ファイルを指定して、CM
 #
-def cmcuter( fp )
-  
-  if test( ?f, fp.chapfn ) == false
+def cmcutCalc( fp, force = false )
 
+  chap2 = sdata = nil
+  
+  if goCalc?( fp ) == true or force == true
     $cmcutLog = fp.cmcutLog
     File.delete( $cmcutLog ) if test(?f, $cmcutLog )
     
@@ -62,7 +95,7 @@ def cmcuter( fp )
     sdata.marking2( )
     sdata.normalization()
     #errLog( sdata.sprint("### 1st adj"))
-    sdata.sprint("")
+    sdata.sprint()              # dummy だけど必要
 
     sdata.setCmRange( )
     sdata.marking3( )
@@ -77,9 +110,8 @@ def cmcuter( fp )
     chap2.restore( fp.chapfn )
   end
 
-  return sdata if $opt[:calcOnly] == true
+  return [ chap2, sdata ]
 
-  ts2mp4( fp, chap2 )
   
 end
 
@@ -129,8 +161,15 @@ if File.basename($0) == "cmcuter.rb"
       $cmcutLog = fp.cmcutLog
       
       dataClear( fp, $opt[:delLevel] )
-  
-      printf("cmcuter() %.2f Sec\n", Benchmark.realtime { cmcuter( fp ) })
+
+      chap = nil
+      t = Benchmark.realtime { ( chap, sdata ) = cmcutCalc( fp ) }
+      errLog(sprintf("cmcutCalc() %.2f Sec\n",t))
+
+      if $opt[:calcOnly] == false
+        t = Benchmark.realtime { ts2mp4( fp, chap ) }
+        errLog(sprintf("tmp2mp4() %.2f Sec\n",t))
+      end
     end
   end
   
