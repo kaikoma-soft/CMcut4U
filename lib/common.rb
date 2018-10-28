@@ -6,6 +6,7 @@ require 'pp'
 require 'optparse'
 require 'fileutils'
 require 'yaml'
+require 'openssl'
 
 require 'const.rb'
 
@@ -18,7 +19,7 @@ $opt = {
   :d => false,                  # debug
   :D => false,                  # more debug
   :f => false,                  # force
-  :uc => true,                  # use cache
+  :uc => false,                 # use cache
   :cmsize => false,             # force CM size
   :tmp => true,                 # tmp mp4 not delete
   :fade => true,                # fade in out
@@ -73,7 +74,7 @@ end
 
 
 #
-#  
+#   タイムスタンプの比較
 #
 def oldFile?( fname, refTime )
   if test( ?f, fname )
@@ -86,6 +87,50 @@ def oldFile?( fname, refTime )
   end
   false
 end
+
+#
+#  sha256 の計算
+#
+def fileDigest( fname )
+  digest = OpenSSL::Digest.new("sha256")
+
+  File.open(fname){|f|
+    while data = f.read(1024)
+      digest.update(data)
+    end
+  }
+  digest.hexdigest
+end
+
+
+#
+#  hash値の読み込み
+#
+def loadDigest( fname )
+  if test( ?f, fname )
+    File.open(fname) do |f|
+      return f.gets.chomp
+    end
+  else
+    return nil
+  end
+end
+
+
+#
+#  hash値の保存
+#
+def saveDigest( fname, str )
+  dir = File.dirname( fname )
+  if test( ?d, dir )
+    File.open(fname,"w") do |f|
+      f.puts( str )
+    end
+  else
+    printf("dir not found %s\n",dir )
+  end
+end
+
 
 
 module Common

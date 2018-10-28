@@ -96,7 +96,6 @@ cb2.signal_connect("changed") do |widget|
     $para[ :tspath ] = sprintf("%s/%s/%s",TSdir,dir,file)
     $para[ :sdata ] = nil
     $newFix = nil
-    setExp()
   end
 end
 

@@ -37,6 +37,18 @@ class Silence < Array
   end
 
   #
+  #  最終フレーム取得
+  #
+  def getLastframe()
+    if self != nil
+      if ( a = self.last ) != nil
+        @lastframe = a.end
+      end
+    end
+    @lastframe
+  end
+  
+  #
   #  データの表示
   #
   def sprint( text = "" )

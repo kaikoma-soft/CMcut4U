@@ -45,6 +45,7 @@ logotable.keys.each do |dir|
     list.each do |fname|
       if fname =~ /#{dir}.*?_(.*)\.ts/
         sname = $1
+        pp sname if $opt[:d] == true
         break
       end
     end

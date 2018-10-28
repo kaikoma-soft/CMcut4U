@@ -42,25 +42,19 @@ end
 
 
 #
-# status bar メッセージ表示
+# 表のタイトル表示
 #
 def setTitle( tbl )
   title = %w( チャプター 無音期間(秒) ←(時分秒) 間隔(秒) 種別 コメント fix)
+  arg = [ Gtk::EXPAND,Gtk::FILL, 1, 1 ]
   title.each_with_index do |str,j|
     label = Gtk::Label.new( str )
-    label.set_justify(Gtk::JUSTIFY_LEFT)
-    eventbox = Gtk::EventBox.new.add(label)
-    tbl.attach_defaults( eventbox, j, j+1, 0, 1 )
+#    label.set_justify(Gtk::JUSTIFY_LEFT)
+#    eventbox = Gtk::EventBox.new.add(label)
+    tbl.attach( label, j, j+1, 0, 1, *arg ) #, *$tblarg 
   end
 end
 
-
-#
-#  期待値の書き換え
-#
-def setExp()
-
-end
 
 
 #
@@ -185,7 +179,6 @@ def calcDisp( fp, sdata )
   setTitle( tbl )
   #$lbw = []
   $newFix = []
-  arg = [ Gtk::FILL,Gtk::FILL, 1, 1 ]
   sdata2.each_with_index do |a,i|
     style = $style[:bg]
     style = $style[:br] if a[4] =~ /CM/
@@ -214,10 +207,10 @@ def calcDisp( fp, sdata )
       if j == 0
         if chapSpan[str][:start] == i
           k = i + 2 + ( chapSpan[str][:end] - chapSpan[str][:start] )
-          tbl.attach( eventbox, j, j+1, i+1, k, *arg )
+          tbl.attach( eventbox, j, j+1, i+1, k, *$tblarg )
         end
       else
-        tbl.attach( eventbox, j, j+1, i+1, i+2, *arg )
+        tbl.attach( eventbox, j, j+1, i+1, i+2, *$tblarg )
       end
     end
   end
@@ -256,7 +249,7 @@ def calc( para, parent )
       $para[:de].text= fp.duration.join(",")
     end
     
-    dataClear( fp, 2 )
+    #dataClear( fp, 2 )
 
     # ダイアログの表示
     d = Gtk::Dialog.new( nil, parent, Gtk::Dialog::MODAL)
@@ -273,7 +266,7 @@ def calc( para, parent )
       $para[:sdata].each_index do |i|
         diff = true if $para[:sdata][i][6] != $newFix[i][:type]
       end
-      p diff
+      #p diff
       if diff == true
         FixFile.new.mergeFix( fp, $newFix )
         statmesg( "fix file saved" )
@@ -282,7 +275,7 @@ def calc( para, parent )
     
     t = Thread.new do           # 待機スレッド
       t.abort_on_exception = true
-      sdata = cmcuter( fp )
+      ( chap, sdata ) = cmcutCalc( fp, true )
       statmesg( "計算終了" )
       d.destroy
 
@@ -346,7 +339,7 @@ end
 def cleanUp()
   if $para[:fifo] != nil
     if FileTest.pipe?( $para[:fifo] )
-      pp "unlink #{$para[:fifo]}"
+      #pp "unlink #{$para[:fifo]}"
       File.unlink( $para[:fifo] )
     end
     $para[:fifo] = nil
@@ -365,7 +358,7 @@ def mpsend( cmd )
     $para[:mpfp].puts( cmd )
     $para[:mpfp].flush
   else
-    puts( "error fp is nil" )
+    statmesg( "Error: mpv not exec" )
   end
 end
 
@@ -378,8 +371,8 @@ def seekMpv( n )
   if $para[:sdata] != nil
     sec = $para[:sdata][n][1].split[0].to_f - 1
     sec = 0 if sec < 0
-    mpsend("seek #{sec.to_i} absolute\n")
     statmesg("seek #{sec.to_i} sec"  )
+    mpsend("seek #{sec.to_i} absolute\n")
   end
   
 end

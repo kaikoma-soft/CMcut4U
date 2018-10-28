@@ -53,7 +53,8 @@ class Chap < Array
         self[i].width = ( self[i+1].time - self[i].time )
         if self[i].width < 0
           printf("Error: ( width = %d )< 0 in %d\n", self[i].width, self[i].time )
-          raise
+          self[i].width = 0
+          #raise
         end
         total += self[i].width
         honpen += self[i].width if self[i].type == :HonPen

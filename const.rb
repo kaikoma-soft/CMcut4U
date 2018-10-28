@@ -6,6 +6,7 @@
 #   定数定義
 #
 Top       = ENV["HOME"] + "/video"
+#Top       = ENV["HOME"] + "/video/tmp3"
 TSdir     = Top + "/TS"
 Outdir    = Top + "/mp4"
 Workdir   = Top + "/work"

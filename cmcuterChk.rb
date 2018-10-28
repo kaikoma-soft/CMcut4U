@@ -109,7 +109,7 @@ class CmCuterChk
     dirs += Dir.entries( mp4dir ) if test(?d, mp4dir )
     tsList = {}
     dirs.each do |f|
-      if f =~ /(.*?)\.(ts|chapList)$/
+      if f =~ /(.*?)\.(ts|mp4)$/
         tsList[ $1 ] = 0
       end
     end
@@ -119,7 +119,7 @@ class CmCuterChk
     comment = nil
     tsList.keys.sort.each do |fname|
 
-      chapfn = sprintf("%s/%s.chapList", mp4dir,fname )
+      chapfn = sprintf("%s/%s/%s/chapList.txt", Workdir,dir,fname)
       mp4fn  = sprintf("%s/%s.mp4", mp4dir,fname )
       chap = Chap.new                     # チャプター
       mp4 = false
