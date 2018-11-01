@@ -146,7 +146,7 @@ Dir.entries( TSdir ).sort.each do |dir|
             t = Benchmark.realtime { ( chap, sdata ) = cmcutCalc( fp ) }
             errLog(sprintf("cmcutCalc() %.2f Sec\n",t))
 
-            if $opt[:calcOnly] == false
+            if $opt[:calcOnly] == false and chap != nil
               t = Benchmark.realtime { ts2mp4( fp, chap ) }
               errLog(sprintf("ts2mp4() %.2f Sec\n",t))
             end
