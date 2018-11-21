@@ -403,7 +403,7 @@ class Silence < Array
     hflag = nil
     self.each do |a|
       if prev != nil and prev.flag == :HonPen
-        if a.flag == nil 
+        if a.flag == nil and a.dis != nil
           if a.dis.between?( 9.6, 10.6 ) == true
             a.flag = :HonPen
             addComment( a, "mark2 offer" )

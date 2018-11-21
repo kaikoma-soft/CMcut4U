@@ -12,7 +12,7 @@ class FilePara
   attr_accessor :tspath, :tsfn,:basedir,:chapfn,:mp4fn, :logofn, :cmlogofn
   attr_accessor :dir, :base, :logotablefn, :cmcutLog, :picdir, :wavfn, :workd
   attr_accessor :duration, :chapNum, :position
-  attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
+  attr_accessor :fixfn, :metafn, :cutSkip, :chapHash, :monolingual
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -101,6 +101,7 @@ class FilePara
     end
     
     @position = lt[ :position ]
+    @monolingual = lt[ :monolingual ] # Only the right channel of audio
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]
   end

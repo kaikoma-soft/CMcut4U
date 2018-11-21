@@ -127,6 +127,7 @@ def allConv( fp )
     opt = { :outfn  =>  fp.mp4fn,
             :s      => $nomalSize,
             :vf     => "yadif=0:-1:1",
+            :monolingual => fp.monolingual,
           }
     makePath( fp.mp4fn )
     ffmpeg.ts2x265( opt )
@@ -160,13 +161,20 @@ if File.basename($0) == "cmcuter.rb"
       
       dataClear( fp, $opt[:delLevel] )
 
-      chap = nil
-      t = Benchmark.realtime { ( chap, sdata ) = cmcutCalc( fp ) }
-      errLog(sprintf("cmcutCalc() %.2f Sec\n",t))
+      if fp.cutSkip == true
+        unless test(?f, fp.mp4fn )
+          t = Benchmark.realtime { allConv( fp ) }
+          errLog(sprintf("allConv() %.2f Sec\n",t))
+        end
+      else
+        chap = nil
+        t = Benchmark.realtime { ( chap, sdata ) = cmcutCalc( fp ) }
+        errLog(sprintf("cmcutCalc() %.2f Sec\n",t))
 
-      if $opt[:calcOnly] == false
-        t = Benchmark.realtime { ts2mp4( fp, chap ) }
-        errLog(sprintf("tmp2mp4() %.2f Sec\n",t))
+        if $opt[:calcOnly] == false
+          t = Benchmark.realtime { ts2mp4( fp, chap ) }
+          errLog(sprintf("tmp2mp4() %.2f Sec\n",t))
+        end
       end
     end
   end

@@ -192,6 +192,7 @@ class Ffmpeg
     arg = @logLevel + %W( -y -analyzeduration 60M -probesize 100M )
     arg += %W( -ss #{opt[:ss]} -t #{opt[:t]} ) if opt[:ss] != nil
     arg += %W( -i #{@tsfn} )
+    arg += %W( -map_channel 0.1.0  -map_channel 0.1.0 ) if opt[:monolingual] == true
     arg += %W( -vcodec libx265 -acodec aac )
     arg += %W( -movflags faststart )
     arg += %W( -x265-params --log-level=warning )

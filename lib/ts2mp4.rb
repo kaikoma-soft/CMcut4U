@@ -59,6 +59,7 @@ def  ts2mp4( fp, chap )
             :s      => $nomalSize,
             :vf     => "yadif=0:-1:1",
             :meta   => metaf,
+            :monolingual => fp.monolingual,
           }
     
     if $opt[:fade] == true
@@ -81,7 +82,8 @@ def  ts2mp4( fp, chap )
       opt[ :s ] = $cmSize
       debugFlag = true
     elsif prob[:width].to_i < 1280
-      opt[ :s ] = sprintf("%sx%s ",prob[:width],prob[:height])
+      opt[ :s ] = nil # サイズそのまま
+      # opt[ :s ] = sprintf("%sx%s ",prob[:width],prob[:height])
     end
     
     if c.type == :CM

@@ -21,11 +21,18 @@ $opt = {
   :calcOnly => true,            # 計算のみ
   :d => true,                   # debug
   :D => false,                  # debug2
-  :uc => true,                  # use cache
+  :uc => false,                 # use cache
   :sa => 3,                     # 許容誤差
 }
 
 $mpv_opt=%w( --osd-duration=3000 --osd-level 2 --hwdec=no --window-scale=0.5 )
+
+
+OptionParser.new do |opt|
+  opt.on('--uc') { |v| $opt[:uc] = true  }
+  opt.parse!(ARGV)
+end
+
 
 
 #
