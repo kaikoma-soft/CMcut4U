@@ -57,12 +57,15 @@ def  ts2mp4( fp, chap )
 
     opt = { :outfn  =>  outf,
             :s      => $nomalSize,
-            :vf     => "yadif=0:-1:1",
+            :vf     => %w( yadif=0:-1:1 ) ,
             :meta   => metaf,
             :monolingual => fp.monolingual,
           }
+    if fp.ffmpeg_vfopt != nil
+      opt[ :vf ] += fp.ffmpeg_vfopt.split()
+    end
     
-    if $opt[:fade] == true
+    if $opt[:fade] == true and fp.fade_inout != false
       fft = $ffmpeg_fadetime
       ss -= fft
       if ss < 0

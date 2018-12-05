@@ -7,7 +7,7 @@ require 'gtk2'
 require "tempfile"
 
 require 'const.rb'
-require 'cmcuter.rb'
+require 'lib/cmcuter.rb'
 
 #
 #  対象ファイルのリストアップ
@@ -287,6 +287,31 @@ def calc( para, parent )
     end
   else
     statmesg(sprintf("Error: file not found (%s)",fn))
+  end
+end
+
+#
+#  エンコード実行
+#
+def encode( para )
+  return if ( fn = para[:tspath] ) == nil
+  if test( ?f, fn )
+
+    if test( ?f, Tablefn )
+      logotable = YAML.load_file( Tablefn )
+    else
+      raise "logo table file not found (#{Tablefn})"
+    end
+    
+    fp = FilePara.new( fn )
+    fp.setLogoTable( logotable[ fp.dir ], fp.dir )
+    $cmcutLog = fp.cmcutLog
+    $para[:fp] = fp
+
+    chap = Chap.new()
+    chap.restore( fp.chapfn )
+    
+    ts2mp4( fp, chap )
   end
 end
 

@@ -23,6 +23,7 @@ class Chap < Array
     @duration = nil
     @mtime = nil                # chapList のmtime
     @cmDataFlag = false         # CM データを保存する
+    self
   end
 
   def setcmDataFlag()
@@ -33,6 +34,15 @@ class Chap < Array
     @mtime = t
   end
 
+  # 最低限の状態にセットする。
+  def init( last, type = :HON )
+    if type != :HON 
+      setcmDataFlag()
+    end
+    add( 0, 0 )
+    add( last, -1 )
+    self
+  end
   
   def add(  time, logo )
     logo2 = case logo
@@ -170,23 +180,26 @@ class Chap < Array
         end
       end
     end
-    spc = "                      "
-    bar = "------------------"
-    r << sprintf("%s%s\n",spc,bar)
+    
+    if @duration != nil and @duration != 0
+      spc = "                      "
+      bar = "------------------"
+      r << sprintf("%s%s\n",spc,bar)
 
-    cmp = @cm / @duration * 100
-    honp = @honpen / @duration * 100
-    if self.cmDataFlag == false
-      ct = "CM_Total"
-      ht = "HonPen_Total"
-    else
-      ht = "CM_Total"
-      ct = "HonPen_Total"
+      cmp = @cm / @duration * 100
+      honp = @honpen / @duration * 100
+      if self.cmDataFlag == false
+        ct = "CM_Total"
+        ht = "HonPen_Total"
+      else
+        ht = "CM_Total"
+        ct = "HonPen_Total"
+      end
+      r << sprintf("%s%8.2f (%4.1f%%) %s\n",spc, @cm, cmp, ct )
+      r << sprintf("%s%8.2f (%4.1f%%) %s\n",spc, @honpen, honp, ht)
+      r << sprintf("%s%s\n",spc,bar)
+      r << sprintf("%s%8.2f  Toatl\n\n",spc,duration)
     end
-    r << sprintf("%s%8.2f (%4.1f%%) %s\n",spc, @cm, cmp, ct )
-    r << sprintf("%s%8.2f (%4.1f%%) %s\n",spc, @honpen, honp, ht)
-    r << sprintf("%s%s\n",spc,bar)
-    r << sprintf("%s%8.2f  Toatl\n\n",spc,duration)
 
     r.join()
   end

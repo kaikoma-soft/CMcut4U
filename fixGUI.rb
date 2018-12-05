@@ -28,11 +28,14 @@ $opt = {
 $mpv_opt=%w( --osd-duration=3000 --osd-level 2 --hwdec=no --window-scale=0.5 )
 
 
+require_relative 'lib/opt.rb'
+
+=begin
 OptionParser.new do |opt|
   opt.on('--uc') { |v| $opt[:uc] = true  }
   opt.parse!(ARGV)
 end
-
+=end
 
 
 #
@@ -124,6 +127,12 @@ hbox2.pack_start(bon2, false, true, 5)
 bon2.signal_connect("clicked") do
   openMpv( $para )
 end
+
+# bon3 = Gtk::Button.new("エンコード")
+# hbox2.pack_start(bon3, false, true, 5)
+# bon3.signal_connect("clicked") do
+#   encode( $para )
+# end
 
 bon3 = Gtk::Button.new("終了")
 hbox2.pack_start(bon3, false, true, 5)

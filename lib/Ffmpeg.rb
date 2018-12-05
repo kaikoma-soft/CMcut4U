@@ -199,7 +199,7 @@ class Ffmpeg
     if opt[:vf] != nil or opt[:fade] != nil
       arg += %W( -vf )
       tmp = []
-      tmp << opt[:vf] if opt[:vf] != nil 
+      tmp += opt[:vf] if opt[:vf] != nil 
       tmp << opt[:fade] if opt[:fade] != nil 
       arg << tmp.join(",")
     end

@@ -14,26 +14,6 @@ require 'const.rb'
 #   puts( msg )
 # end
 
-$opt = {
-  :v => false,                  # verbose
-  :d => false,                  # debug
-  :D => false,                  # more debug
-  :f => false,                  # force
-  :uc => false,                 # use cache
-  :cmsize => false,             # force CM size
-  :tmp => true,                 # tmp mp4 not delete
-  :fade => true,                # fade in out
-  :leaveCSV => true,
-  :leaveTMP => true,
-  :calcOnly => false,           # calc only( do not create mp4 )
-  :delLevel => 0,               # delete level
-  :ngOnly => false,             # ng only convert mp4
-  :limit  => nil,               # limit num
-  :sa   => 3,                   # 誤差の許容範囲
-}
-
-$max_threads = 3
-
 
 def errLog( msg )
 

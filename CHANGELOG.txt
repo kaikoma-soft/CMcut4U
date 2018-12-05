@@ -1,9 +1,20 @@
 
+ver 0.4.0	2018/12/05
+  ・ffmpeg に vfオプションを渡せるように。
+    (logo-table.yaml 中の ffmpeg_vfopt )
+  ・チャプター割を、ロゴを使わず音声のみで行うオプション追加
+    (logo-table.yaml 中の audio_only )
+  ・フェードイン・アウト処理を行わないオプション追加
+    (logo-table.yaml 中の fade_in_out )
+  ・chapList.txt のハッシュチェックを行わない。 --ic オプション追加
+  ・オプション周りの整理
+  ・cmcuterAll(Chk).rb に --dir オプション追加
+
 ver 0.3.2	2018/11/21
   ・fixGUI に --uc オプション追加
   ・2カ国語放送を日本語のみにするパラメータを追加。
     (logo-table.yaml 中の monolingual )
-  ・横1028 以下の場合は、サイズ変更なしに。
+  ・横1280 以下の場合は、サイズ変更なしに。
 
 ver 0.3.1	2018/11/01
   バグ修正：ロゴ未検出時の異常終了

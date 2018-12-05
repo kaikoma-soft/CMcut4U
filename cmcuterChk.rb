@@ -99,10 +99,10 @@ class CmCuterChk
     data = Epi.new
 
     if test( ?f,"#{tsdir}/#{Skip}" ) or test( ?f,"#{tsdir}/#{CmcutSkip}" )
-      data.err = sprintf("\n# %s Skip\n\n",dir ) if $opt[:ng] == false
+      data.err = sprintf("\n# %s Skip\n\n",dir ) if $opt[:ngOnly] == false
       return data
     end
-    
+
     # リスト作成
     dirs = []
     dirs += Dir.entries( tsdir ) if test(?d, tsdir )
@@ -138,13 +138,13 @@ class CmCuterChk
       
       # 話数の抽出
       wa = fname
-      if fname =~ /(\d+)$/     # 
+      if fname =~ /第(\d+)(話|番)/     # 
         wa = $1
       elsif fname =~ /第([一二三四五六七八九十]+)(話|番)/     # 
         wa = $1
-      elsif fname =~ /第(\d+)/     # 
-        wa = $1
       elsif fname =~ /\#(\d+)/     # 
+        wa = $1
+      elsif fname =~ /(\d+)$/     # 
         wa = $1
       elsif fname =~ /([\-\d\.]+)/
         wa = $1
@@ -198,36 +198,7 @@ end
 if File.basename($0) == "cmcuterChk.rb"
   $: << File.dirname( $0 )
 
-  def usage()
-    pname = File.basename($0)
-    usageStr = <<"EOM"
-Usage: #{pname} [Options]...
-
-  Options:
-  --ng        NG なものだけ対象にする。
-  --sa n　　　誤差の許容範囲を n 秒にする。デフォルトは 3秒
-  --help      Show this help
-
-#{pname} ver #{Version}
-EOM
-    print usageStr
-    exit 1
-end
-
-  $opt = {
-    :d => false,                  # debug
-    :ng => false,                 # NG only
-    :test => false,               # test mode
-    :sa   => 3,                   # 誤差の許容範囲
-  }
-
-  OptionParser.new do |opt|
-    opt.on('-d') { $opt[:d] = true }
-    opt.on('--ng') { $opt[:ng] = true }     # NG only
-    opt.on('--sa n') {|v| $opt[:sa] = v.to_i }     # 誤差の許容範囲
-    opt.on('--help') { usage() }
-    opt.parse!(ARGV)
-  end
+  require_relative 'lib/opt.rb'
 
   logotable = Common::loadLogoTable()
 
@@ -237,19 +208,22 @@ end
   #
   (Dir.entries( TSdir ) + Dir.entries( Outdir )).sort.uniq.each do |dir|
     next if dir == "." or dir == ".."
-    
+    if $opt[:dir] != nil
+      next if $opt[:dir] != dir
+    end
+
     path1 = TSdir + "/" + dir
     path2 = Outdir + "/" + dir
 
     if test(?d, path1 ) or test(?d, path2 )
       fp = FilePara.new( path1 )
       fp.setLogoTable( logotable[ dir ], dir )
-      
+
       if ( data = CmCuterChk.new.chkTitle( dir, fp ) ) != nil
         if data.err != nil
           puts( data.err )
         else
-          if $opt[:ng] == false or data.tfc > 0
+          if $opt[:ngOnly] == false or data.tfc > 0
             data.print( dir  )
           end
         end

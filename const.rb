@@ -16,6 +16,8 @@ Skip      = "mp4.skip"
 CmcutSkip = "cmcut.skip"
 
 CPU_core  = 4
+$max_threads = 3
+
 Fps       = 29.97
 WavRatio  = 44100 / 10
 
@@ -23,7 +25,7 @@ WavRatio  = 44100 / 10
 SS_rate       = 1.0 / 2
 SS_frame_rate = 2
 
-Version = "0.3.2"
+Version = "0.4.0"
 
 #
 #  for ffmpeg
@@ -34,3 +36,6 @@ $nomalSize       = "1280x720"
 $cmSize          = "640x360"
 
 $python_bin      = "python"
+
+#0 240  1680  1920
+#1080

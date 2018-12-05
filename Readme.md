@@ -57,6 +57,12 @@ Outdir で指定したディレクトリに mp4 ファイルを出力します�
 * X window (fixGUI.rb の実行に必要)
 
 
+## ライセンス
+このソフトウェアは、Apache License Version 2.0 ライセンスのも
+とで公開します。詳しくは LICENSE を見て下さい。
+
+
+
 詳細は、
 [作者 WEB ページ](http://www.asahi-net.or.jp/~sy8y-siy/CMcut_on_Unix/)
 を参照して下さい。

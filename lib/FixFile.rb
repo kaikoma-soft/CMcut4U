@@ -172,7 +172,11 @@ class FixFile
             chapC = Chap.new
             chapC.setcmDataFlag()
             chapC.add( 0, 0 )
-            chapC.add( chapH.getLastTime(), -1 )
+            if chapH != nil
+              if chapH.getLastTime() != nil
+                chapC.add( chapH.getLastTime(), -1 )
+              end
+            end
           end
           chapC.insertData( time )
         end

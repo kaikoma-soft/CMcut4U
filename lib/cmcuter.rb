@@ -7,13 +7,14 @@ require 'shellwords'
 require 'benchmark'
 
 $: << File.dirname( $0 )
-require_relative 'lib/FilePara.rb'
-require_relative 'lib/common.rb'
-require_relative 'lib/logoAnalysis.rb'
-require_relative 'lib/ts2mp4.rb'
-require_relative 'lib/ts2pngwav.rb'
-require_relative 'lib/wavAnalysis.rb'
-require_relative 'lib/FixFile.rb'
+require_relative 'FilePara.rb'
+require_relative 'common.rb'
+require_relative 'logoAnalysis.rb'
+require_relative 'ts2mp4.rb'
+require_relative 'ts2png.rb'
+require_relative 'ts2wav.rb'
+require_relative 'wavAnalysis.rb'
+require_relative 'FixFile.rb'
 
 
 
@@ -27,15 +28,17 @@ def goCalc?( fp )
     if test(?f, fp.mp4fn )
       if File.mtime( fp.mp4fn ) < File.mtime( fp.chapfn )
         # 現在のchapList のハッシュと過去のは一致するか？
-        hash_now = fileDigest( fp.chapfn )
-        hash_old = loadDigest( fp.chapHash )
-        if hash_old == nil
-          errLog("#old hash not found") if $opt[:d] == true
-          return true
-        end
-        unless hash_old == hash_now
-          errLog("#hash diff") if $opt[:d] == true
-          return true
+        if $opt[:ic] == false
+          hash_now = fileDigest( fp.chapfn )
+          hash_old = loadDigest( fp.chapHash )
+          if hash_old == nil
+            errLog("#old hash not found") if $opt[:d] == true
+            return true
+          end
+          unless hash_old == hash_now
+            errLog("#hash diff") if $opt[:d] == true
+            return true
+          end
         end
       end
     end
@@ -57,20 +60,35 @@ def cmcutCalc( fp, force = false )
   if goCalc?( fp ) == true or force == true
     $cmcutLog = fp.cmcutLog
     File.delete( $cmcutLog ) if test(?f, $cmcutLog )
-    
-    # TS から　wav, ScreenShot を抽出
-    ( wavfn, picdir ) = ts2pngwav( fp )
 
-    if fp.logofn == nil or fp.logofn.size == 0
-      errLog("Warning: not found in logofile\n")
-      return [nil,nil]
-    end
+    # TS から　wav を抽出
+    wavfn = ts2wav( fp )
+      
+    # sound データ取得
+    sdata = wavAnalysis1( wavfn )
+    last = sdata.getLastframe()
+    sdata.calcDis()
+    #errLog( sdata.sprint("### Silence data from wav") )
 
-    # logo データ取得
-    ( chapH, chapC ) = logoAnalysis( fp, picdir )
-    if chapH.size < 5 and chapH.duration > 600
-      errLog("Error: The number of chapters is too small.\n")
-      return [nil,nil]
+    if fp.audio_only != true
+
+      # TS から　ScreenShot を抽出
+      picdir = ts2png( fp )
+
+      if fp.logofn == nil or fp.logofn.size == 0
+        errLog("Warning: not found in logofile\n")
+        return [nil,nil]
+      end
+
+      # logo データ取得
+      ( chapH, chapC ) = logoAnalysis( fp, picdir )
+      if chapH.size < 5 and chapH.duration > 600
+        errLog("Error: The number of chapters is too small.\n")
+        return [nil,nil]
+      end
+    else
+      chapH = Chap.new().init( last )
+      chapC = Chap.new().init( last, :CM )
     end
 
     # fix ファイルの読み込み
@@ -81,21 +99,21 @@ def cmcutCalc( fp, force = false )
     if chapC != nil
       errLog(chapC.sprint("### CM     Chapter from logo data"))
     end
-    
-    # sound データ取得
-    sdata = wavAnalysis1( wavfn )
-    sdata.calcDis()
-    #errLog( sdata.sprint("### Silence data from wav") )
 
     # sound データの加工、調整
     sdata.marking1a( chapH, chapC, 1 )   # 1pass
-    sdata.marking1b( )
-    sdata.marking1c( )
+    if fp.audio_only != true
+      sdata.marking1b( )
+      sdata.marking1c( )
+      sdata.marking2( )
+    else
+      errLog( sdata.sprint(""))
+    end
 
-    sdata.marking2( )
     sdata.normalization()
     #errLog( sdata.sprint("### 1st adj"))
-    sdata.sprint()              # dummy だけど必要
+    sdata.marking1a( chapH, chapC, 1 )   # 併合したものに対しての２回め
+    sdata.sprint()                       # dummy だけど必要
 
     sdata.setCmRange( )
     sdata.marking3( )
@@ -126,7 +144,7 @@ def allConv( fp )
   unless test( ?f, fp.mp4fn )
     opt = { :outfn  =>  fp.mp4fn,
             :s      => $nomalSize,
-            :vf     => "yadif=0:-1:1",
+            :vf     => %w( yadif=0:-1:1 ) ,
             :monolingual => fp.monolingual,
           }
     makePath( fp.mp4fn )
@@ -139,13 +157,18 @@ if File.basename($0) == "cmcuter.rb"
   $: << File.dirname( $0 )
   require_relative 'lib/dataClear.rb'
   
+  require_relative 'lib/opt.rb'
+=begin
   OptionParser.new do |opt|
-    opt.on('-d') { $opt[:d] = true }
-    opt.on('--co') { |v| $opt[:calcOnly] = true  }
+    opt.on('-d')     { $opt[:d] = true }
+    opt.on('--co')   { $opt[:calcOnly] = true  }
     opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
-    opt.on('--cm') { |v| $opt[ :cmsize] = true  }      # force CM size
+    opt.on('--cm')   {  $opt[ :cmsize] = true  }      # force CM size
+    opt.on('--fade') { $opt[:fade] = !$opt[:fade] }   # fade invert
+    opt.on('--no') { $opt[:e] = !$opt[:fade] }   # fade invert
     opt.parse!(ARGV)
   end
+=end
 
   if test( ?f, Tablefn )
     logotable = YAML.load_file( Tablefn )

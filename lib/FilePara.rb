@@ -12,7 +12,8 @@ class FilePara
   attr_accessor :tspath, :tsfn,:basedir,:chapfn,:mp4fn, :logofn, :cmlogofn
   attr_accessor :dir, :base, :logotablefn, :cmcutLog, :picdir, :wavfn, :workd
   attr_accessor :duration, :chapNum, :position
-  attr_accessor :fixfn, :metafn, :cutSkip, :chapHash, :monolingual
+  attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
+  attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt, :fade_inout
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -102,6 +103,10 @@ class FilePara
     
     @position = lt[ :position ]
     @monolingual = lt[ :monolingual ] # Only the right channel of audio
+    @audio_only = lt[ :audio_only ] # logo解析を行わず、音声のみで処理する。
+    @ffmpeg_vfopt = lt[ :ffmpeg_vfopt ]
+    @fade_inout = lt[ :fade_inout ]
+    
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]
   end
@@ -109,26 +114,26 @@ class FilePara
   #
   #  chapList を mp4 の下から work へ移動する。
   #
-  def moveChapList()
-    if test( ?f, @chapfnOld )
-      unless test( ?f, @chapfn )
-        dir = File.dirname( @chapfn )
-        if test( ?d, dir )
-          hash = fileDigest( @chapfnOld )
-          saveDigest( @chapHash, hash )
-          File.rename( @chapfnOld, @chapfn )
-          printf("move %s\n",@chapfnOld )
-        end
-      end
-    end
-    if test( ?f, @chapfn )
-      unless test( ?f, @chapHash )
-        hash = fileDigest( @chapfn )
-        saveDigest( @chapHash, hash )
-        printf("make hash %s\n", @chapHash )
-      end
-    end
-  end
+  # def moveChapList()
+  #   if test( ?f, @chapfnOld )
+  #     unless test( ?f, @chapfn )
+  #       dir = File.dirname( @chapfn )
+  #       if test( ?d, dir )
+  #         hash = fileDigest( @chapfnOld )
+  #         saveDigest( @chapHash, hash )
+  #         File.rename( @chapfnOld, @chapfn )
+  #         printf("move %s\n",@chapfnOld )
+  #       end
+  #     end
+  #   end
+  #   if test( ?f, @chapfn )
+  #     unless test( ?f, @chapHash )
+  #       hash = fileDigest( @chapfn )
+  #       saveDigest( @chapHash, hash )
+  #       printf("make hash %s\n", @chapHash )
+  #     end
+  #   end
+  # end
   
 end
 
