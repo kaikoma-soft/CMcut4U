@@ -74,7 +74,7 @@ end
 #
 #
 #
-if File.basename($0) == "ts2pngwav.rb"
+if File.basename($0) == "ts2png.rb"
   $: << File.dirname( $0 )
   
   if ARGV.size > 0

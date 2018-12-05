@@ -12,7 +12,6 @@ require  'const.rb'
 require_relative 'Ffmpeg.rb'
 require_relative 'common.rb'
 require_relative 'logoAnalysis.rb'
-require_relative 'ts2pngwav.rb'
 require_relative 'wavAnalysis.rb'
 
 #
