@@ -13,7 +13,8 @@ class FilePara
   attr_accessor :dir, :base, :logotablefn, :cmcutLog, :picdir, :wavfn, :workd
   attr_accessor :duration, :chapNum, :position
   attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
-  attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt, :fade_inout
+  attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt
+  attr_accessor :fade_inout, :end_of_silent
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -102,10 +103,15 @@ class FilePara
     end
     
     @position = lt[ :position ]
-    @monolingual = lt[ :monolingual ] # Only the right channel of audio
+    if lt[ :monolingual ] == nil # Only the right channel of audio
+      @monolingual = nil
+    else
+      @monolingual = lt[ :monolingual ].to_i
+    end
     @audio_only = lt[ :audio_only ] # logo解析を行わず、音声のみで処理する。
     @ffmpeg_vfopt = lt[ :ffmpeg_vfopt ]
     @fade_inout = lt[ :fade_inout ]
+    @end_of_silent = lt[ :end_of_silent ] # 長い無音期間の最後を境界にする。
     
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]
