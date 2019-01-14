@@ -7,6 +7,8 @@ require 'shellwords'
 require 'benchmark'
 
 $: << File.dirname( $0 )
+$: << File.dirname( $0 ).sub(/\/lib/,'')
+
 require_relative 'FilePara.rb'
 require_relative 'common.rb'
 require_relative 'logoAnalysis.rb'
@@ -61,18 +63,18 @@ def cmcutCalc( fp, force = false )
     $cmcutLog = fp.cmcutLog
     File.delete( $cmcutLog ) if test(?f, $cmcutLog )
 
-    # TS から　wav を抽出
+    # TS から wav を抽出
     wavfn = ts2wav( fp )
       
     # sound データ取得
     sdata = wavAnalysis1( wavfn )
     last = sdata.getLastframe()
     sdata.calcDis()
-    #errLog( sdata.sprint("### Silence data from wav") )
+    errLog( sdata.sprint("### Silence data from wav") ) if $opt[:d] == true
 
     if fp.audio_only != true
 
-      # TS から　ScreenShot を抽出
+      # TS から ScreenShot を抽出
       picdir = ts2png( fp )
 
       if fp.logofn == nil or fp.logofn.size == 0
@@ -101,7 +103,7 @@ def cmcutCalc( fp, force = false )
     end
 
     # sound データの加工、調整
-    sdata.marking1a( chapH, chapC, 1 )   # 1pass
+    sdata.marking1a( chapH, chapC )   # 1pass
     if fp.audio_only != true
       sdata.marking1b( )
       sdata.marking1c( )
@@ -111,15 +113,16 @@ def cmcutCalc( fp, force = false )
     end
 
     sdata.normalization()
-    #errLog( sdata.sprint("### 1st adj"))
-    sdata.marking1a( chapH, chapC, 1 )   # 併合したものに対しての２回め
+    errLog( sdata.sprint("### 1st adj")) if $opt[:d] == true
+    sdata.marking3( )
+    sdata.marking1a( chapH, chapC )      # 併合したものに対しての２回め
     sdata.sprint()                       # dummy だけど必要
 
     sdata.setCmRange( )
-    sdata.marking3( )
+    sdata.marking4( )
     errLog( sdata.sprint("### Chapter adj "))
 
-    chap2 = sdata.createChap( )
+    chap2 = sdata.createChap( fp )
     errLog( chap2.sprint("### final Chapter List" ))
 
     chap2.dataDump( fp.chapfn )
@@ -154,21 +157,8 @@ end
 
 
 if File.basename($0) == "cmcuter.rb"
-  $: << File.dirname( $0 )
-  require_relative 'lib/dataClear.rb'
-  
-  require_relative 'lib/opt.rb'
-=begin
-  OptionParser.new do |opt|
-    opt.on('-d')     { $opt[:d] = true }
-    opt.on('--co')   { $opt[:calcOnly] = true  }
-    opt.on('--dd n') { |v| $opt[:delLevel] = v.to_i  } # delete data
-    opt.on('--cm')   {  $opt[ :cmsize] = true  }      # force CM size
-    opt.on('--fade') { $opt[:fade] = !$opt[:fade] }   # fade invert
-    opt.on('--no') { $opt[:e] = !$opt[:fade] }   # fade invert
-    opt.parse!(ARGV)
-  end
-=end
+  require_relative 'dataClear.rb'
+  require_relative 'opt.rb'
 
   if test( ?f, Tablefn )
     logotable = YAML.load_file( Tablefn )

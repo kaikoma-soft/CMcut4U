@@ -288,7 +288,7 @@ class Silence < Array
   #
   #  チャプター情報から 音声情報に本編の判定を行う。
   #
-  def marking1a( logoH, logoC, pass = 1 )
+  def marking1a( logoH, logoC )
 
     conv2Ranges( logoH, logoC )
 
@@ -386,7 +386,7 @@ class Silence < Array
           a.end = a.start + 5
           a.flag = :HonPen
           addComment( a, "mark1b EndCard" )
-          errLog( "EndCaed #{a.start}" )
+          #errLog( "EndCaed #{a.start}" )
         end
       end
     end
@@ -427,12 +427,42 @@ class Silence < Array
     return false if t > 9.5
     return true
   end
+
+  #
+  #  データの併合をする。( n と n+1 )
+  #
+  def merge( list )
+
+    list.sort.reverse.each do |n|
+      self[ n ].end = self[ n+1 ].end
+      self[ n+1 ].flag = :Del
+    end
+    calcDis()
+  end
   
+  #
+  #  開始 15秒未満の不定 5秒以下は併合する。
+  #
+  def marking3()
+    list = []
+    self.each_with_index do |a,n|
+      if self[n].flag == nil and self[n+1].flag == nil
+        if self[n].dis < 5 and self[n+1].dis < 5
+          list << n
+        end
+      end
+      break if a.start > 15
+    end
+    if list.size > 0
+      merge( list )
+    end
+  end
+    
   #
   #  最終調整
   #
-  def marking3(  )
-
+  def marking4(  )
+      
     # 最後の方の半端な時間は CM とする。
     ( self.size - 2).downto( self.size - 10 ) do |n|
       a = self[n]
@@ -441,14 +471,13 @@ class Silence < Array
         if a.flag == nil
           if hanpa?( a.dis ) == true
             a.flag = :CM
-            addComment( a, "mark3a" )
+            addComment( a, "mark4a" )
           else
             break
           end
         end
       end
     end
-    
     
     #
     #  残った未確認を確定に
@@ -463,11 +492,10 @@ class Silence < Array
         else
           a.flag = :HonPen
         end
-        addComment( a, "mark3b" )
+        addComment( a, "mark4b" )
       end
       n += 1
     end
-
     
   end
 
@@ -505,7 +533,7 @@ class Silence < Array
   #
   # dumb データからチャプターを再構成
   #
-  def createChap( )
+  def createChap( fp )
 
     chap = Chap.new
     lasttime = getLastTime()
@@ -515,7 +543,11 @@ class Silence < Array
       logo = s.flag == :HonPen ? 1 : 0
       if logo != flag
         if logo == 1
-          time = s.start + 0.5
+          if ( s.end - s.start ) > 5 and fp.end_of_silent == true
+            time = s.end - 0.5
+          else
+            time = s.start + 0.5
+          end
         else
           time = s.start == 0.0 ? s.start : s.end - 0.5
         end

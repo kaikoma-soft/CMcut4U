@@ -9,6 +9,7 @@
 require 'optparse'
 require 'pp'
 require 'yaml'
+require 'find'
 
 $: << File.dirname( $0 )
 require_relative '../const.rb'
@@ -22,15 +23,18 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-sdir = ENV["HOME"] + "/video/epgrec"
+sdir = "/home3/video"
 tdir = ENV["HOME"] + "/video/TS"
 ldir = ENV["HOME"] + "/video/logo"
 
 list = []
-Dir.foreach( sdir ) do |fname|
-  fname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
-  fname.tr!( '０-９！－','0-9!-')
-  list << fname
+Find.find( sdir ) do |f|
+  if f =~ /\.ts$/
+    fname = File.basename( f )
+    fname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
+    fname.tr!( '０-９！－','0-9!-')
+    list << fname
+  end
 end
 
 if test( ?f, Tablefn )

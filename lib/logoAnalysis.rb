@@ -70,7 +70,7 @@ end
 
 def runOpencv( logofns, picdir )
   now = nil
-  dir = File.dirname( $0 )
+  dir = File.dirname( $0 ).sub(/\/lib/,'')
   chap = Chap.new
 
   chap.add( 0, 0 )  # 最初
