@@ -14,13 +14,14 @@ $opt = {
   :uc        => false,          # use cache
   :cmsize    => false,          # force CM size
   :fade      => true,           # fade in out
-  :calcOnly  => false,          # calc only( do not create mp4 )
+  :calcOnly  => false,          # calc only( mp4 生成を行わない )
   :delLevel  => 0,              # delete level
   :ngOnly    => false,          # ng only convert mp4
   :limit     => nil,            # limit num
   :sa        => 3,              # 誤差の許容範囲
   :ic        => false,          # Ignore check chapList.txt
   :dir       => nil,            # subdir
+  :autoremove => false          # 作業用ファイルの自動削除
 }
 
 def usage( type)
@@ -36,6 +37,7 @@ def usage( type)
   str = []
   if type == :all
     str << "-f          ロックファイルが存在していても実行する。"
+    str << "--ar        作業用ファイルの自動削除。"
   end
 
   if type == :all or type ==  :single
@@ -81,6 +83,7 @@ OptionParser.new do |opt|
 
   if type == :all
     opt.on('-f')     { $opt[:f] = true }             # 強制実行
+    opt.on('--ar')   { $opt[:autoremove] = true }    # 作業用ファイルの削除
   end
 
   if type == :all or type ==  :single
