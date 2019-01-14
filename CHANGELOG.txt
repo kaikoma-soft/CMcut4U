@@ -1,4 +1,13 @@
 
+ver 0.5.0	2019/01/14
+  ・work dir 以下の作業ファイルを自動で削除する
+    --ac (autoremove) オプション追加
+  ・二ヶ国語の音声を日本語のみにするオプション追加
+    (logo-table.yaml 中の monolingual )
+  ・開始 15秒未満で 5秒以下の不定は併合するように。
+  ・分離した音声のduration が異なった場合、エラーで停止するのではなく
+    補正した値で処理を継続するように。
+
 ver 0.4.0	2018/12/05
   ・ffmpeg に vfオプションを渡せるように。
     (logo-table.yaml 中の ffmpeg_vfopt )
