@@ -250,7 +250,7 @@ class Chap < Array
                     end
              if time =~ /(\d+):(\d+):([\d.]+)/
                time = ( $1.to_f * 3600 + $2.to_f * 60 + $3.to_f ) 
-               add( time.to_i, type )
+               add( time.round(2), type )
              end
            end
          end
