@@ -22,45 +22,6 @@ require_relative 'lib/dataClear.rb'
 
 require_relative 'lib/opt.rb'
 
-=begin
-def usage()
-  pname = File.basename($0)
-    usageStr = <<"EOM"
-Usage: #{pname} [Options]...
-
-  Options:
-  -f          ロックファイルが存在していても実行する。
-  --co        CMカットに必要な計算のみ行う。mp4変換を行わない。
-  --cm        本編画面サイズを $comSize にする。
-  --ng        NG なものだけ対象にする。
-  --dd n      最終・中間結果ファイルを削除する。
-  --sa n　　　誤差の許容範囲を n 秒にする。デフォルトは 3秒
-  --help      Show this help
-
-#{pname} ver #{Version}
-EOM
-    print usageStr
-    exit 1
-end
-
-
-OptionParser.new do |opt|
-  opt.on('-v')     { $opt[:v] = true }             # verbose
-  opt.on('-d')     { $opt[:d] = true }             # debug
-  opt.on('-D')     { $opt[:D] = true }             # debug2
-  opt.on('-f')     { $opt[:f] = true }             # force
-  opt.on('--co')   { $opt[:calcOnly] = true  }     # 
-  opt.on('--cm')   { $opt[:cmsize] = true  }       # force CM size
-  opt.on('--ng')   { $opt[:ngOnly] = true  }       # 
-  opt.on('--dd n') {|v| $opt[:delLevel] = v.to_i  }# delete data
-  opt.on('--sa n') {|v| $opt[:sa] = v.to_i }       # 誤差の許容範囲
-  opt.on('--uc')   { $opt[:uc] = true  }           # #
-  opt.on('--fade') { $opt[:fade] = !$opt[:fade] }  # fade flag 反転
-  opt.on('--help') { usage() }
-  opt.parse!(ARGV)
-end
-
-=end
 
 #
 #   多重起動防止
@@ -95,6 +56,7 @@ end
 
 
 $logotable = Common::loadLogoTable()
+
 
 
 #
@@ -164,6 +126,45 @@ Dir.entries( TSdir ).sort.each do |dir|
     end
   end
 end
+
+#
+#  autoremove
+#
+if $opt[:autoremove] == true
+  Dir.entries( Workdir ).sort.each do |dir1|
+    next if dir1 == "." or dir1 == ".."
+    path1 = Workdir + "/" + dir1
+    if test( ?d, path1 )
+      Dir.entries( path1 ).sort.each do |dir2|
+        next if dir2 == "." or dir2 == ".."
+        path2 = path1 + "/" + dir2
+        if test( ?d, path2 )
+          ts = sprintf("%s/%s/%s.ts",TSdir,dir1,dir2)
+          if test( ?f, ts )
+            printf("+ %s\n",ts) if $opt[:d] == true
+          else
+            printf("work del %s/%s\n",dir1,dir2 )
+            FileUtils.rmtree( path2 )
+          end
+        end
+      end
+    end
+  end
+
+  # 空になったディレクトリを削除
+  Dir.entries( Workdir ).sort.each do |dir1|
+    next if dir1 == "." or dir1 == ".."
+    path1 = Workdir + "/" + dir1
+    if test( ?d, path1 )
+      n = Dir.entries( path1 ).size
+      if n == 2 
+        printf("del %s\n", dir1 )
+        FileUtils.rmdir( path1 )
+      end
+    end
+  end
+end
+
 
 
 
