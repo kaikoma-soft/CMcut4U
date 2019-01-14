@@ -29,12 +29,16 @@ def  ts2mp4( fp, chap )
   
   raise if prob[:duration2] == nil
   sa = chap.duration - prob[ :duration2 ]
-  if sa.abs > 10
-    errLog (sprintf("Error: Recording time isn't identical. (%5.2f != %5.2f)\n",
-                    chap.duration, prob[ :duration2 ]))
-    return
+  hosei = ( sa.to_f / prob[ :duration2 ] ) 
+  if hosei.abs > 0.001
+    errLog (sprintf("Warning: Recording time is different. (%5.2f != %5.2f %2.2f%%)\n",chap.duration, prob[ :duration2 ], hosei * 100 ))
+
+    # 補正
+    chap.each do |c|
+      c.time = c.time - ( hosei * prob[ :duration2 ] )
+    end
   end
-  
+
   
   #
   #  チャプター毎に mp4 化
