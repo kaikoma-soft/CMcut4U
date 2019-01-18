@@ -83,7 +83,12 @@ def calcDisp( fp, sdata )
       tstart = ( a.start + a.end ) / 2
       tend   = sdata[i+1].start
       fix = ff.hantei( tstart,tend )
-      tmid = (( tstart + tend ) / 2 ).round(1)
+      tmid = nil
+      if ( tend -  tstart ) < 3
+        tmid = (( a.start + a.end ) / 2 ).round(1)
+      else
+        tmid = (( tstart + tend ) / 2 ).round(1)
+      end
     else
       fix = FixFile::None
     end

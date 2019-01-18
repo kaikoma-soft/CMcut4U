@@ -6,7 +6,7 @@ require_relative 'Ranges.rb'
 require_relative 'Chap.rb'
 
 #
-#  無音期間の　開始-終了の配列
+#  無音期間の 開始-終了の配列
 #
 class Silence < Array
 
@@ -265,6 +265,11 @@ class Silence < Array
       cs += 2
       ce -= 2
     end
+    # if ( s - 6356 ).abs < 3
+    #   p c
+    #   p s
+    #   p e
+    # end
     return true if s.between?( cs, ce ) or e.between?( cs, ce )
     return true if s < cs and ce < e
     false
@@ -302,8 +307,8 @@ class Silence < Array
       s = a.mid
       e = a.start + a.dis - 1
       if a.dis > 10             # 余裕があれば境界付近は避ける
-        s += 2
-        e -= 2
+        s += 1
+        e -= 1
       end
       if @cmChap != nil          # CM判定の方が優先
         @cmChap.each do |c|
@@ -446,6 +451,7 @@ class Silence < Array
   def marking3()
     list = []
     self.each_with_index do |a,n|
+      break if ( n + 1 ) == ( self.size - 1 )
       if self[n].flag == nil and self[n+1].flag == nil
         if self[n].dis < 5 and self[n+1].dis < 5
           list << n
