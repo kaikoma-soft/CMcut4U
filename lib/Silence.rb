@@ -222,7 +222,7 @@ class Silence < Array
       tc = 0
       count = []
       tgosa = 0
-      i.upto(i+10) do |n|
+      i.upto(i+20) do |n|
         if self[n].flag == :HonPen
           break
         elsif self[n].dis != nil 

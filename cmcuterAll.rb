@@ -85,11 +85,12 @@ Dir.entries( TSdir ).sort.each do |dir|
       if f =~ /\.ts$/
         ts = path1 + "/" + f
         printf("> %s\n",ts) if $opt[:v] == true
+        next if FileTest.zero?( ts )
 
         fp = FilePara.new( ts )
         fp.setLogoTable( $logotable[ dir ], dir )
 
-        if fp.cutSkip == true
+        if fp.cutSkip == true or $logotable[ dir ][ :cmcut_skip ] == true
           unless test(?f, fp.mp4fn )
             t = Benchmark.realtime { allConv( fp ) }
             errLog(sprintf("allConv() %.2f Sec\n",t))
@@ -140,7 +141,7 @@ if $opt[:autoremove] == true
         path2 = path1 + "/" + dir2
         if test( ?d, path2 )
           ts = sprintf("%s/%s/%s.ts",TSdir,dir1,dir2)
-          if test( ?f, ts )
+          if FileTest.size?( ts ) != nil
             printf("+ %s\n",ts) if $opt[:d] == true
           else
             printf("work del %s/%s\n",dir1,dir2 )

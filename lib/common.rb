@@ -146,7 +146,8 @@ module Common
   #   CM の時間か(合計)
   #
   def cmTimeAll?( dis, haba = 0.9*2 )
-    30.step(255, 15) do |cms|
+    max = 15 * 4 * 8            # 最長 8分
+    30.step( max, 15) do |cms|
       if dis.between?( cms - haba, cms + haba )
         return true
       end

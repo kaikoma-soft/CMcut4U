@@ -1,4 +1,16 @@
 
+ver 0.6.0   2019/03/05
+  ・logo-tbl.yaml の編集ツールの logoTblEdit.rb を追加
+  ・TSファイルを サイズ 0 にしても問題無いように。(ディスク容量削減の為)
+  ・fixGUI に "logo抽出" と "logoTable編集" のボタンを追加
+  ・logo-table.yaml に下記のパラメータを追加
+      * Endcard の検出の無効化(ignore_endcard )
+      * cmcuterChk の対象外とする(ignore_check)
+      * このディレクトリは無視する ( mp4skip )
+      * CMカット処理は行わず、丸ごと ( cmcut_skip )
+  ・音声と映像の長さが違う時は、映像の方に合わせるように補正を掛ける。
+      
+
 ver 0.5.1   2019/01/18
   ・1分の番組で、異常終了するバグの修正
 

@@ -14,7 +14,7 @@ class FilePara
   attr_accessor :duration, :chapNum, :position
   attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
   attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt
-  attr_accessor :fade_inout, :end_of_silent
+  attr_accessor :fade_inout, :end_of_silent, :ignore_check, :ignore_endcard
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -108,10 +108,14 @@ class FilePara
     else
       @monolingual = lt[ :monolingual ].to_i
     end
-    @audio_only = lt[ :audio_only ] # logo解析を行わず、音声のみで処理する。
-    @ffmpeg_vfopt = lt[ :ffmpeg_vfopt ]
-    @fade_inout = lt[ :fade_inout ]
-    @end_of_silent = lt[ :end_of_silent ] # 長い無音期間の最後を境界にする。
+    @audio_only     = lt[ :audio_only ] # logo解析を行わず、音声のみで処理する。
+    @ffmpeg_vfopt   = lt[ :ffmpeg_vfopt ]
+    @fade_inout     = lt[ :fade_inout ]
+    @end_of_silent  = lt[ :end_of_silent ] # 長い無音期間の最後を境界にする。
+    @ignore_check   = !!lt[ :ignore_check ] # cmcuterChk の対象外とする。
+    @ignore_endcard = !!lt[ :ignore_endcard ] # EndCard 検出を無効化
+    @mp4skip        = !!lt[ :mp4skip ]    # このディレクトリは無視する
+    @cmcut_skip     = !!lt[ :cmcut_skip ] # CMカット処理は行わず、丸ごと 
     
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]

@@ -85,6 +85,7 @@ vbox2.add(cb2)
 
 cb1.signal_connect("changed") do |widget|
   dir = widget.active_text
+  $para[ :dir ] = dir
   if tsFiles[ dir ] != nil
     $para[ :cb2Count ].times { cb2.remove_text(0) }
     n = 0
@@ -108,10 +109,8 @@ cb2.signal_connect("changed") do |widget|
   end
 end
 
-hbox2 = Gtk::HBox.new(false, 0)
+hbox2 = Gtk::HBox.new(false, 10)
 vbox1.pack_start(hbox2, false, false, 10)
-
-
 
 #
 #  コマンドボタン
@@ -128,15 +127,28 @@ bon2.signal_connect("clicked") do
   openMpv( $para )
 end
 
+bon3 = Gtk::Button.new("logo抽出")
+hbox2.pack_start(bon3, false, true, 5)
+bon3.signal_connect("clicked") do
+  execLogoAna( $para )
+end
+
 # bon3 = Gtk::Button.new("エンコード")
 # hbox2.pack_start(bon3, false, true, 5)
 # bon3.signal_connect("clicked") do
 #   encode( $para )
 # end
 
-bon3 = Gtk::Button.new("終了")
-hbox2.pack_start(bon3, false, true, 5)
-bon3.signal_connect("clicked") do
+bon5 = Gtk::Button.new("logoTable編集")
+hbox2.pack_start(bon5, false, true, 5)
+bon5.signal_connect("clicked") do
+  execLTE( $para )
+end
+
+
+bon4 = Gtk::Button.new("終了")
+hbox2.pack_start(bon4, false, true, 5)
+bon4.signal_connect("clicked") do
   cleanUp()
   window.destroy
   Gtk.main_quit

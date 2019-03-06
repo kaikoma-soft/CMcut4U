@@ -116,20 +116,18 @@ class CmCuterChk
 
     tfc = 0                       # total fail count
     ttc = 0                       # total test count
-    comment = nil
+    comment = ""
     tsList.keys.sort.each do |fname|
 
       chapfn = sprintf("%s/%s/%s/chapList.txt", Workdir,dir,fname)
       mp4fn  = sprintf("%s/%s.mp4", mp4dir,fname )
       chap = Chap.new                     # チャプター
       mp4 = false
+      hon = 0
       result = nil
       fc = 0                      # fail count
       tc = 0                      # test count
       
-      if test( ?f, chapfn )
-        chap.restore( chapfn )
-      end
       if test( ?f, mp4fn )
         mp4 = true
       else
@@ -152,38 +150,48 @@ class CmCuterChk
         wa = $1
       end
 
-      hon = chap.getHonPenTime()
-      chap2 = chap.size == 0 ? nil : chap.size
       data.duration = fp.duration
-
       if fp.chapNum != nil and fp.chapNum.size > 0
-        fc += 1 unless fp.chapNum.include?( chap2 )
-        tc += 1
         comment = sprintf("chapNum=%s", fp.chapNum.join(",") )
       end
       if fp.duration != nil and fp.duration.size > 0 
         comment += sprintf(", duration=%s", fp.duration.join(",") )
-        tc += 1
-        flag = false
-        fp.duration.each do |d|
-          next if d == nil
-          if hon.between?( d - $opt[:sa], d + $opt[:sa] ) == true
-            flag = true
-            break
-          end
+      end
+      
+      if test( ?f, chapfn )
+        chap.restore( chapfn )
+        hon = chap.getHonPenTime()
+        chap2 = chap.size == 0 ? nil : chap.size
+
+        if fp.chapNum != nil and fp.chapNum.size > 0
+          fc += 1 unless fp.chapNum.include?( chap2 )
+          tc += 1
         end
-        fc += 1 if flag == false
-        tc += 1
+        if fp.duration != nil and fp.duration.size > 0 
+          tc += 1
+          flag = false
+          fp.duration.each do |d|
+            next if d == nil
+            if hon.between?( d - $opt[:sa], d + $opt[:sa] ) == true
+              flag = true
+              break
+            end
+          end
+          fc += 1 if flag == false
+          tc += 1
+        end
+      else
+        result = "-"
       end
       
       if fc > 0
-        result = "NG"
+        result = "NG" if result == nil
         tfc += 1
       else
-        result = "OK"
+        result = "OK" if result == nil
       end
       ttc += tc
-      
+
       data.add( chapfn, wa, chap2, hon, mp4, result )
     end
     data.comment = comment
@@ -218,6 +226,10 @@ if File.basename($0) == "cmcuterChk.rb"
     if test(?d, path1 ) or test(?d, path2 )
       fp = FilePara.new( path1 )
       fp.setLogoTable( logotable[ dir ], dir )
+      if fp.ignore_check == true
+        printf("\n# %s Skip\n\n",dir ) if $opt[:ngOnly] == false
+        next
+      end
 
       if ( data = CmCuterChk.new.chkTitle( dir, fp ) ) != nil
         if data.err != nil

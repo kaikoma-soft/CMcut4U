@@ -28,6 +28,7 @@ def  ts2mp4( fp, chap )
   prob = ffmpeg.getTSinfo( fp.tsfn )
   
   raise if prob[:duration2] == nil
+=begin  
   sa = chap.duration - prob[ :duration2 ]
   hosei = ( sa.to_f / prob[ :duration2 ] ) 
   if hosei.abs > 0.001
@@ -38,7 +39,7 @@ def  ts2mp4( fp, chap )
       c.time = c.time - ( hosei * prob[ :duration2 ] )
     end
   end
-
+=end
   
   #
   #  チャプター毎に mp4 化

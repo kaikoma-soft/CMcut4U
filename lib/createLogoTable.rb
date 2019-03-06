@@ -23,13 +23,13 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-sdir = "/home3/video"
+sdir = "/home3/spool"
 tdir = ENV["HOME"] + "/video/TS"
 ldir = ENV["HOME"] + "/video/logo"
 
 list = []
 Find.find( sdir ) do |f|
-  if f =~ /\.ts$/
+  if f =~ /\.ts$/i
     fname = File.basename( f )
     fname.tr!( 'ａ-ｚＡ-Ｚ','a-zA-Z')
     fname.tr!( '０-９！－','0-9!-')
@@ -47,7 +47,7 @@ logotable.keys.each do |dir|
     pp dir if $opt[:d] == true
     sname = nil
     list.each do |fname|
-      if fname =~ /#{dir}.*?_(.*)\.ts/
+      if fname =~ /#{dir}.*?_(.*)\.ts/i
         sname = $1
         pp sname if $opt[:d] == true
         break

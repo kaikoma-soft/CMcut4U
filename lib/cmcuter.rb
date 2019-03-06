@@ -72,6 +72,26 @@ def cmcutCalc( fp, force = false )
     sdata.calcDis()
     errLog( sdata.sprint("### Silence data from wav") ) if $opt[:d] == true
 
+    #
+    #  映像の時間と音声時間を比較して、違う場合は補正を掛ける。
+    #
+    ffmpeg = Ffmpeg.new( fp.tsfn )
+    prob = ffmpeg.getTSinfo( fp.tsfn )
+  
+    raise if prob[:duration2] == nil
+    hosei = prob[ :duration2 ] / last
+    if hosei.abs > 1.001
+      errLog (sprintf("\nWarning: Recording time is different. (%5.2f != %5.2f %2.2f%%)\n\n",last, prob[ :duration2 ], hosei * 100 ))
+
+      # 補正
+      sdata.each do |s|
+        s.start *= hosei
+        s.end   *= hosei
+      end
+      sdata.calcDis()
+      errLog( sdata.sprint("### Silence data from wav after correct") ) if $opt[:d] == true
+    end
+    
     if fp.audio_only != true
 
       # TS から ScreenShot を抽出
@@ -105,7 +125,7 @@ def cmcutCalc( fp, force = false )
     # sound データの加工、調整
     sdata.marking1a( chapH, chapC )   # 1pass
     if fp.audio_only != true
-      sdata.marking1b( )
+      sdata.marking1b( ) if fp.ignore_endcard != true
       sdata.marking1c( )
       sdata.marking2( )
     else

@@ -362,6 +362,59 @@ def openMpv( para )
 end
 
 
+def execLTE( para )
+  cmd = "logoTblEdit.rb"
+  arg = []
+  if para[:dir] != nil
+    arg = %W( --dir #{para[:dir]} )
+  end
+  begin
+    pid = spawn( cmd, *arg )
+    t = Thread.new do           # 終了待ちスレッド
+      Process::waitpid( pid )
+    end
+  rescue Errno::ENOENT => e
+    msg = "Error: can't exec #{cmd}"
+    statmesg( msg )
+    puts( msg )
+  end
+end
+
+
+
+def execLogoAna( para )
+
+  cmd = "logoAnalysisSub.py"
+  if para[:tsfile] == nil
+    msg = "Error: ts file not select"
+    statmesg( msg )
+    puts( msg )
+    return
+  end
+  
+  base = File.basename( para[:tsfile],".ts")
+  ssdir = sprintf("%s/%s/%s/SS",Workdir, para[:dir],base  )
+
+  if test( ?d, ssdir )
+    arg = %W( --dir #{ssdir} ) 
+    begin
+      pid = spawn( cmd, *arg )
+      t = Thread.new do           # 終了待ちスレッド
+        Process::waitpid( pid )
+      end
+    rescue Errno::ENOENT => e
+      msg = "Error: can't exec #{cmd}"
+      statmesg( msg )
+      puts( msg )
+    end
+  else
+    msg = "Error: screen shot dir not found : #{ssdir}"
+    statmesg( msg )
+    puts( msg )
+  end
+end
+
+
 
 #
 # fifo の後始末
