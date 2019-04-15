@@ -15,8 +15,8 @@ Tablefn   = TSdir + "/logo-table.yaml"
 Skip      = "mp4.skip"
 CmcutSkip = "cmcut.skip"
 
-CPU_core  = 4
-$max_threads = 3
+CPU_core  = 8
+$max_threads = (CPU_core * 1.0 ).to_i
 
 Fps       = 29.97
 WavRatio  = 44100 / 10
@@ -25,12 +25,12 @@ WavRatio  = 44100 / 10
 SS_rate       = 1.0 / 2
 SS_frame_rate = 2
 
-Version = "0.6.0"
+Version = "0.7.0"
 
 #
 #  for ffmpeg
 #
-$ffmpeg_bin      = "ffmpeg"
+$ffmpeg_bin      = "/usr/local/bin/ffmpeg"
 $ffmpeg_fadetime = 0.5
 $nomalSize       = "1280x720"
 $cmSize          = "640x360"

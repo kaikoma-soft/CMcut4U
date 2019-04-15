@@ -15,6 +15,7 @@ class FilePara
   attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
   attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt
   attr_accessor :fade_inout, :end_of_silent, :ignore_check, :ignore_endcard
+  attr_accessor :opening_delay, :nhk_type
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -27,7 +28,7 @@ class FilePara
     end
 
     @logotablefn = sprintf("%s/logo-table.yaml",@basedir)
-    @fixfn  = sprintf("%s/%s/fix.yaml",@basedir,@dir)
+    @fixfn  = sprintf("%s/%s/fix2.yaml",@basedir,@dir)
 
     @chapfnOld = sprintf("%s/%s/%s.chapList",Outdir,@dir,@base )
     @mp4fn  = sprintf("%s/%s/%s.mp4",Outdir,@dir,@base )
@@ -112,10 +113,16 @@ class FilePara
     @ffmpeg_vfopt   = lt[ :ffmpeg_vfopt ]
     @fade_inout     = lt[ :fade_inout ]
     @end_of_silent  = lt[ :end_of_silent ] # 長い無音期間の最後を境界にする。
+    @nhk_type       = !!lt[ :nhk_type ]    # 途中CM無し、前後に長い無音期間あり
     @ignore_check   = !!lt[ :ignore_check ] # cmcuterChk の対象外とする。
     @ignore_endcard = !!lt[ :ignore_endcard ] # EndCard 検出を無効化
     @mp4skip        = !!lt[ :mp4skip ]    # このディレクトリは無視する
-    @cmcut_skip     = !!lt[ :cmcut_skip ] # CMカット処理は行わず、丸ごと 
+    @cmcut_skip     = !!lt[ :cmcut_skip ] # CMカット処理は行わず、丸ごと
+    if lt[ :opening_delay ] != nil
+      @opening_delay = lt[ :opening_delay ].to_f # 本編開始の微調整
+    else
+      @opening_delay = nil
+    end
     
     #@duration = lt[ :duration ]
     #@chapNum = lt[ :chapNum ]

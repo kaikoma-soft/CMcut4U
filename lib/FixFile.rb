@@ -75,7 +75,7 @@ class FixFile
       @data.each do |tmp|
         type = "CM" if tmp.type == AllCM or tmp.type == SelfCM
         type = "HonPen" if tmp.type == AllHon or tmp.type == SelfHon
-        r << sprintf("%s : %s : %s",tmp.fname, type,tmp.time)
+        r << sprintf("%s : %s : %s",tmp.fname, type,tmp.time.round(1))
       end
       r << ("-" * 32 )
     end
@@ -95,6 +95,21 @@ class FixFile
     None
   end
 
+  #
+  #  
+  #
+  def hantei2( tstart )
+    s1 = tstart.round(1)
+    @data.each do |d|
+      s2 = d.time.round(1)
+      if s1 == s2
+        return d.type
+        break
+      end
+    end
+    None
+  end
+  
   def typeStr( type )
     types = %w( - 本編 CM 全話共通-本編 全話共通-CM )
     return types[ type ]
@@ -169,18 +184,18 @@ class FixFile
           chapH.insertData( time )
         elsif r[2] =~ /^c/i
           if chapC == nil
-            chapC = Chap.new
-            chapC.setcmDataFlag()
-            chapC.add( 0, 0 )
             if chapH != nil
-              if chapH.getLastTime() != nil
-                chapC.add( chapH.getLastTime(), -1 )
-              end
+              chapC = Chap.new().init( chapH.getLastTime(), :CM )
             end
           end
           chapC.insertData( time )
         end
-        fix2 << sprintf("%s : %d : %s",r[0],time,r[2])
+        fix2 << sprintf("%s : %.1f : %s",r[0],time,r[2])
+      end
+    end
+    if chapC != nil and chapH != nil
+      if chapC.last[:type] != -1
+        chapC.add( chapH.getLastTime(), -1 )
       end
     end
 

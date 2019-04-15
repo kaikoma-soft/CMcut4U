@@ -8,6 +8,7 @@ require "tempfile"
 
 require 'const.rb'
 require 'lib/cmcuter.rb'
+require 'lib/Chap.rb'
 
 #
 #  対象ファイルのリストアップ
@@ -60,7 +61,7 @@ end
 #
 #  計算結果の表
 #
-def calcDisp( fp, sdata )
+def calcDisp( fp, sdata, chapter )
   chap = 0
   oldtype = nil
   sdata2 = []
@@ -73,7 +74,10 @@ def calcDisp( fp, sdata )
   duration = 0
   sdata.each_with_index do |a,i|
     dis = a.dis != nil ? a.dis : 0.0
-    silen = sprintf("%7.1f - %7.1f", a.start, a.end )
+    tmp1 = sprintf("%.1f",a.start )
+    tmp2 = sprintf("%.1f",a.end )
+    tmp3 = sprintf("%.1f",a.end - a.start )
+    silen = sprintf("%7s  - %7s (%4s)",tmp1,tmp2, tmp3)
     min   = sprintf("%s",Common::sec2min(a.start) )
     dis   = sprintf("%5.1f",dis )
     type  = sprintf("%-7s",a.flag == nil ? "" : a.flag.to_s)
@@ -82,13 +86,14 @@ def calcDisp( fp, sdata )
     if sdata[i+1] != nil
       tstart = ( a.start + a.end ) / 2
       tend   = sdata[i+1].start
-      fix = ff.hantei( tstart,tend )
-      tmid = nil
-      if ( tend -  tstart ) < 3
-        tmid = (( a.start + a.end ) / 2 ).round(1)
-      else
-        tmid = (( tstart + tend ) / 2 ).round(1)
-      end
+      fix = ff.hantei2( a.start )
+      #fix = ff.hantei( tstart,tend )
+      # tmid = nil
+      # if ( tend -  tstart ) < 3
+      #   tmid = (( a.start + a.end ) / 2 ).round(1)
+      # else
+      #   tmid = (( tstart + tend ) / 2 ).round(1)
+      # end
     else
       fix = FixFile::None
     end
@@ -100,7 +105,7 @@ def calcDisp( fp, sdata )
       duration += a.dis if a.dis != nil
     end
     
-    sdata2 << [ chap,silen,min,dis,type,comme,fix, tmid ]
+    sdata2 << [ chap,silen,min,dis,type,comme, fix, a.start ]
   end
 
   tbl = Gtk::Table.new(5, sdata.size + 1, false)
@@ -116,8 +121,8 @@ def calcDisp( fp, sdata )
   menuItem[0] = Gtk::MenuItem.new( ff.typeStr(0) )
   menuItem[1] = Gtk::MenuItem.new( ff.typeStr(1) )
   menuItem[2] = Gtk::MenuItem.new( ff.typeStr(2) )
-  menuItem[3] = Gtk::MenuItem.new( ff.typeStr(3) )
-  menuItem[4] = Gtk::MenuItem.new( ff.typeStr(4) )
+  #menuItem[3] = Gtk::MenuItem.new( ff.typeStr(3) )
+  #menuItem[4] = Gtk::MenuItem.new( ff.typeStr(4) )
   menuItem.each_with_index do |mi,i|
     menu.append mi
     mi.signal_connect('activate') do |widget, event|
@@ -149,8 +154,9 @@ def calcDisp( fp, sdata )
   if $para[:cc] != nil
     $para[:cc].text= chapSpan.size.to_s
   end
+  hon = chapter.getHonPenTime()
   if $para[:dc] != nil
-    $para[:dc].text= duration.round(1).to_s
+    $para[:dc].text=  sprintf("%.2f",hon) # duration.round(2).to_s
   end
 
   if $para[:cr] != nil
@@ -164,7 +170,7 @@ def calcDisp( fp, sdata )
   end
   if $para[:dr] != nil
     flag = false
-    hon = duration.round(1)
+    # hon = duration.round(2)
     $para[:fp].duration.each do |d|
       next if d == nil
       if hon.between?( d - $opt[:sa], d + $opt[:sa] ) == true
@@ -285,7 +291,7 @@ def calc( para, parent )
       d.destroy
 
       if sdata != nil
-        calcDisp(fp, sdata)         # 表示
+        calcDisp(fp, sdata, chap) # 表示
       else
         statmesg( "計算失敗" )
       end

@@ -26,6 +26,7 @@ end
 
 def wavAnalysis2( wavfn )
 
+  return nil unless test( ?f, wavfn )
   f = open(wavfn)
   format, chunks = WavFile::readAll(f)
   f.close

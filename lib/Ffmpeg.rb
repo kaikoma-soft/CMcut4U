@@ -140,7 +140,7 @@ class Ffmpeg
   #
   def ts2ss( opt )
     arg = @logLevel +
-          %W( -threads #{CPU_core} -i #{@tsfn} ) +
+          %W( -threads #{$max_threads} -i #{@tsfn} ) +
           %W( -r #{SS_frame_rate} -f image2 -vframes #{opt[:vf]} ) +
           %W( -vf crop=#{opt[:w]}:#{opt[:h]}:#{opt[:x2]}:#{opt[:y2]} ) +
           %W( -vcodec mjpeg -y #{opt[:picdir]}/ss_%05d.jpg )
@@ -159,7 +159,7 @@ class Ffmpeg
   #
   def ts2wav( opt )
     arg = @logLevel +
-          %W( -threads #{CPU_core} -i #{@tsfn} ) +
+          %W( -threads #{$max_threads} -i #{@tsfn} ) +
           %W( -vn -ac 1 -ar #{WavRatio} -acodec pcm_s16le -f wav ) +
           %W( -y #{opt[:outfn]} ) 
     system2( @bin, *arg )
@@ -191,7 +191,7 @@ class Ffmpeg
       
     arg = @logLevel + %W( -y -analyzeduration 60M -probesize 100M )
     arg += %W( -ss #{opt[:ss]} -t #{opt[:t]} ) if opt[:ss] != nil
-    arg += %W( -i #{@tsfn} )
+    arg += %W( -threads #{$max_threads} -i #{@tsfn} )
     if opt[:monolingual] == 1
       arg += %W( -map_channel 0.1.0  -map_channel 0.1.0 )
     elsif opt[:monolingual] == 2

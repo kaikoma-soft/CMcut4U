@@ -62,7 +62,7 @@ class Chap < Array
 
         self[i].width = ( self[i+1].time - self[i].time )
         if self[i].width < 0
-          printf("Error: ( width = %d )< 0 in %d\n", self[i].width, self[i].time )
+          #printf("Error: ( width = %f ) < 0 in %d\n", self[i].width, self[i].time )
           self[i].width = 0
           #raise
         end
@@ -208,9 +208,11 @@ class Chap < Array
   #
   #  data のダンプ
   #
-  def dataDump( fname )
+  def dataDump( fpara )
 
+    fname = fpara.chapfn
     makePath( fname )
+    opening = true
     if File.open( fname, "w") do |fp|
          self.each do |s|
            type = case s.type
@@ -221,13 +223,27 @@ class Chap < Array
                     p s.type
                     raise
                   end
-           t = sec2min( s.time)
+           t = sec2min( s.time )
            fp.printf( "%s  %s\n",t, type )
          end
        end
     end
   end
 
+  #
+  #  opening_delay オプションの処理
+  #
+  def opening_delay( fp )
+
+    return if fp.opening_delay == nil
+    self.each do |s|
+      if s.type == :HonPen
+        s.time += fp.opening_delay
+        break
+      end
+    end
+  end
+  
   
   #
   #  data のrestore

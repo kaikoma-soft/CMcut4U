@@ -289,6 +289,58 @@ class Silence < Array
       @cmChap = logoC.conv2Ranges()
     end
   end
+
+  #
+  #  本編途中に CM が無く、両端に無音期間ある筈
+  #
+  def marking0()
+    st = et = nil
+    stime = 1.4 #2.5                 # 無音期間
+    last = getLastTime()
+    maxw = -1
+    self.each_index do |n|
+      if self[n].w > stime       
+        if st == nil
+          st = n
+        elsif et == nil
+          if self[n].start > ( last.to_f * 0.7 )
+            if maxw == -1
+              n.upto( self.size - 2 ) do |n2|
+                if self[n2].w > maxw
+                  maxw = self[n2].w # 複数ある場合は最大のものを
+                end
+              end
+            end
+            if self[n].w == maxw
+              #p "not maxw #{maxw}"
+              et = n
+            end
+          else
+            #p "not 70% #{self[n].start}"
+          end
+        end
+      end
+    end
+    if self[st].start < 60 and  et != nil
+      0.upto( self.size - 2 ) do |n|
+        if self[n].flag == nil
+          if n < st
+            self[n].flag = :CM 
+          elsif st <= n  and n < et
+            self[n].flag = :HonPen
+          else
+            self[n].flag = :CM
+          end
+        end
+        addComment( self[n], "mark0" )
+      end
+      return true               # 成功
+    else
+      errLog( "\n*** mark0 fail ***\n" )
+    end
+
+    false # 失敗
+  end
   
   #
   #  チャプター情報から 音声情報に本編の判定を行う。
@@ -529,6 +581,28 @@ class Silence < Array
     end
   end
   
+
+  #
+  # fixデータから flag の設定
+  #
+  def setFix( fix )
+    fix.each do |f|
+      s1 = f.time.round(1)
+      self.each do |a|
+        if a.flag == nil and a.dis != nil
+          s2 = a.start.round(1)
+          if s1 == s2
+            a.flag = case f.type
+                     when FixFile::SelfHon then :HonPen
+                     when FixFile::AllHon  then :HonPen
+                     when FixFile::SelfCM  then :CM
+                     when FixFile::AllCM   then :CM
+                     end
+          end
+        end
+      end
+    end
+  end
 
   
   def getLastTime()

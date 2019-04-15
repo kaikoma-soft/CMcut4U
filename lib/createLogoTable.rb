@@ -23,7 +23,7 @@ OptionParser.new do |opt|
   opt.parse!(ARGV)
 end
 
-sdir = "/home3/spool"
+sdir = "/data/spool"
 tdir = ENV["HOME"] + "/video/TS"
 ldir = ENV["HOME"] + "/video/logo"
 
@@ -44,12 +44,13 @@ end
 chflag = false                  # change flag
 logotable.keys.each do |dir|
   if logotable[ dir ][ :logofn ] == nil
-    pp dir if $opt[:d] == true
+    #pp dir if $opt[:d] == true
     sname = nil
+    dir2 = dir.tr( 'ａ-ｚＡ-Ｚ','a-zA-Z').tr( '０-９！－','0-9!-')
     list.each do |fname|
-      if fname =~ /#{dir}.*?_(.*)\.ts/i
+      if fname =~ /#{dir2}.*?_(.*)\.ts/i
         sname = $1
-        pp sname if $opt[:d] == true
+        pp dir2,sname if $opt[:d] == true
         break
       end
     end

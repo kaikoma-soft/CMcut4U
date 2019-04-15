@@ -67,7 +67,10 @@ def cmcutCalc( fp, force = false )
     wavfn = ts2wav( fp )
       
     # sound データ取得
-    sdata = wavAnalysis1( wavfn )
+    if ( sdata = wavAnalysis1( wavfn )) == nil
+      errLog( "Error: #{wavfn}" )
+      return [nil,nil]
+    end
     last = sdata.getLastframe()
     sdata.calcDis()
     errLog( sdata.sprint("### Silence data from wav") ) if $opt[:d] == true
@@ -98,54 +101,69 @@ def cmcutCalc( fp, force = false )
       picdir = ts2png( fp )
 
       if fp.logofn == nil or fp.logofn.size == 0
-        errLog("Warning: not found in logofile\n")
+        errLog("*** Warning: not found in logofile ***\n\n")
         return [nil,nil]
       end
 
       # logo データ取得
       ( chapH, chapC ) = logoAnalysis( fp, picdir )
-      if chapH.size < 5 and chapH.duration > 600
+      if chapH.size < 5 and chapH.duration > 620
         errLog("Error: The number of chapters is too small.\n")
         return [nil,nil]
       end
-    else
+    else                        # ダミー
       chapH = Chap.new().init( last )
       chapC = Chap.new().init( last, :CM )
     end
 
     # fix ファイルの読み込み
     ff = FixFile.new()
-    ( chapH, chapC ) = ff.loadFix( fp, chapH, chapC )
-
-    errLog(chapH.sprint("### Honpen Chapter from logo data"))
-    if chapC != nil
-      errLog(chapC.sprint("### CM     Chapter from logo data"))
-    end
+    fix = ff.readFix( fp )
+    sdata.setFix( fix )
+    
+    #( chapH, chapC ) = ff.loadFix( fp, chapH, chapC )
+    #errLog(chapH.sprint("### Honpen Chapter from logo data"))
+    # if chapC != nil
+    #   errLog(chapC.sprint("### CM     Chapter from logo data"))
+    #end
 
     # sound データの加工、調整
-    sdata.marking1a( chapH, chapC )   # 1pass
-    if fp.audio_only != true
-      sdata.marking1b( ) if fp.ignore_endcard != true
-      sdata.marking1c( )
-      sdata.marking2( )
-    else
-      errLog( sdata.sprint(""))
+    mark0 = false
+    if fp.nhk_type == true
+      sdata.calcDis()
+      errLog( sdata.sprint("### 1st adj"))
+      mark0 = sdata.marking0()
+      errLog( sdata.sprint("### 2nd adj"))
     end
 
-    sdata.normalization()
-    errLog( sdata.sprint("### 1st adj")) if $opt[:d] == true
-    sdata.marking3( )
-    sdata.marking1a( chapH, chapC )      # 併合したものに対しての２回め
-    sdata.sprint()                       # dummy だけど必要
+    if mark0 == false                 # 失敗
+      sdata.marking1a( chapH, chapC )   # 1pass
+      if fp.audio_only != true
+        sdata.marking1b( ) if fp.ignore_endcard != true
+        sdata.marking1c( )
+        sdata.marking2( )
+      else
+        errLog( sdata.sprint(""))
+      end
 
-    sdata.setCmRange( )
-    sdata.marking4( )
-    errLog( sdata.sprint("### Chapter adj "))
+      sdata.normalization()
+      errLog( sdata.sprint("### 1st adj")) if $opt[:d] == true
+      sdata.marking3( )
+      #sdata.marking1a( chapH, chapC )      # 併合したものに対しての２回め
+      sdata.setFix( fix )
+
+      sdata.sprint()                       # dummy だけど必要
+
+      sdata.setCmRange( )
+      sdata.marking4( )
+      errLog( sdata.sprint("### Chapter adj "))
+    end
 
     chap2 = sdata.createChap( fp )
     errLog( chap2.sprint("### final Chapter List" ))
 
-    chap2.dataDump( fp.chapfn )
+    chap2.opening_delay( fp )   # 本編開始の遅延
+    chap2.dataDump( fp )
   else
     chap2 = Chap.new()
     chap2.restore( fp.chapfn )
