@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby 
+#!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 #
 
@@ -25,7 +25,7 @@ WavRatio  = 44100 / 10
 SS_rate       = 1.0 / 2
 SS_frame_rate = 2
 
-Version = "0.7.0"
+Version = "0.7.１"
 
 #
 #  for ffmpeg
