@@ -161,6 +161,9 @@ class CmCuterChk
       if test( ?f, chapfn )
         chap.restore( chapfn )
         hon = chap.getHonPenTime()
+        if fp.opening_delay != nil
+          hon += fp.opening_delay
+        end
         chap2 = chap.size == 0 ? nil : chap.size
 
         if fp.chapNum != nil and fp.chapNum.size > 0
