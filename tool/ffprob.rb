@@ -8,7 +8,7 @@ require 'nkf'
 #
 def ffprobe( input )
 
-  key = %w( width height codec_long_name duration field_order display_aspect_ratio )
+  key = %w( codec_long_name duration  time_base )
 
   r = {}
   r[ :fname ] = input
@@ -35,13 +35,9 @@ def ffprobe( input )
     end
   end
 
-  [ :duration2, :width, :height ].each do |key|
-    if r[ key ] == nil
-      raise "#{key.to_s} is nil #{input}"
-    end
+  if r[:time_base] != nil
+    r[:ratio] = r[ :time_base ].sub(/1\//,'').to_i
   end
-  
   r
-
 end
 

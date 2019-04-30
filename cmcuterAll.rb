@@ -12,7 +12,7 @@ require 'shellwords'
 require 'benchmark'
 require 'yaml'
 
-$: << File.dirname( $0 )
+$: << ( dir = File.dirname( $0 ))
 require_relative 'lib/cmcuter.rb'
 require_relative 'cmcuterChk.rb'
 require_relative 'const.rb'
@@ -21,7 +21,7 @@ require_relative 'lib/common.rb'
 require_relative 'lib/dataClear.rb'
 
 require_relative 'lib/opt.rb'
-
+require_relative 'lib/_override.rb'
 
 #
 #   多重起動防止

@@ -7,6 +7,10 @@ require 'shellwords'
 require 'benchmark'
 require 'wav-file'
 
+if File.basename($0) == "wavAnalysis.rb"
+  $: << ( dir = File.dirname( $0 ))
+  $: << ( dir = File.dirname( dir ))
+end
 require_relative 'common.rb'
 require_relative 'Silence.rb'
 
@@ -56,13 +60,10 @@ def wavAnalysis2( wavfn )
   if format.channel == 1
     wavs.each do |i|
       if i < 3                 # 無音レベル
-        if zs == nil
-          zs = f
-        end
+        zs = f if zs == nil
       else
         if zs != nil
           if ( f - zs ) > ( WavRatio / 10 * 4 )   # 0.4 秒以上
-            #printf("%3d %s - %s\n", count,f2min(zs,1),f2min(f,1))
             data.add( zs.to_f / WavRatio, f.to_f / WavRatio )
             count += 1
           end
@@ -71,24 +72,29 @@ def wavAnalysis2( wavfn )
       end
       f += 1
     end
+    if zs != nil
+      data.add( zs.to_f / WavRatio, f.to_f / WavRatio )
+    end
   elsif format.channel == 2
     0.step(wavs.size-1,2 ) do |j|
       l = wavs[j]
       r = wavs[j+1]
 
       if l < 3 and r < 3   # 無音レベル
-        if zs == nil
-          zs = j
-        end
+        zs = j if zs == nil
       else
         if zs != nil
           if ( j - zs ) > ( WavRatio / 10 * 4 )    # 0.4 秒以上
-            printf("%3d %s - %s\n", count,f2min(zs),f2min(j))
+            #printf("%3d %s - %s\n", count,f2min(zs),f2min(j))
+            data.add( zs.to_f / WavRatio, j.to_f / WavRatio )
             count += 1
           end
         end
         zs = nil
       end
+    end
+    if zs != nil
+      data.add( zs.to_f / WavRatio, f.to_f / WavRatio )
     end
   else
     raise

@@ -14,6 +14,7 @@ LogoDir   = Top + "/logo"
 Tablefn   = TSdir + "/logo-table.yaml"
 Skip      = "mp4.skip"
 CmcutSkip = "cmcut.skip"
+LongSilenceTime = 2.9
 
 CPU_core  = 8
 $max_threads = (CPU_core * 1.0 ).to_i
@@ -25,7 +26,7 @@ WavRatio  = 44100 / 10
 SS_rate       = 1.0 / 2
 SS_frame_rate = 2
 
-Version = "0.7.１"
+Version = "0.8.0"
 
 #
 #  for ffmpeg

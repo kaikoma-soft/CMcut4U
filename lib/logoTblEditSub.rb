@@ -55,7 +55,8 @@ def set_val( ws, dir = nil )
   ws[:opt_nf].active=(false)
   ws[:opt_mono0].active = true
   ws[:opt_vopt].set_text("")
-  ws[:opt_delay].set_text("")
+  ws[:opt_odelay].set_text("")
+  ws[:opt_cdelay].set_text("")
 
   # 値をセット
   if test( ?f, Tablefn )
@@ -142,7 +143,11 @@ def set_val( ws, dir = nil )
     end
 
     if lt[ :opening_delay ] != nil
-      ws[:opt_delay].set_text(lt[ :opening_delay ].to_s)
+      ws[:opt_odelay].set_text(lt[ :opening_delay ].to_s)
+    end
+    
+    if lt[ :closeing_delay ] != nil
+      ws[:opt_cdelay].set_text(lt[ :closeing_delay ].to_s)
     end
     
   end
@@ -229,13 +234,16 @@ def save( ws, dir )
     r[ :ffmpeg_vfopt ] = tmp
   end
 
-  tmp = ws[:opt_delay].text
+  tmp = ws[:opt_odelay].text
   if tmp != nil and tmp != ""
     r[ :opening_delay ] = tmp.to_f
   end
 
-  :opt_delay
-  
+  tmp = ws[:opt_cdelay].text
+  if tmp != nil and tmp != ""
+    r[ :closeing_delay ] = tmp.to_f
+  end
+
   Common::saveLogoTable( lt )
 
 end

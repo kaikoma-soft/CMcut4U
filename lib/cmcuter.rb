@@ -18,6 +18,7 @@ require_relative 'ts2wav.rb'
 require_relative 'wavAnalysis.rb'
 require_relative 'FixFile.rb'
 
+require_relative '_override.rb'
 
 
 #
@@ -160,9 +161,8 @@ def cmcutCalc( fp, force = false )
     end
 
     chap2 = sdata.createChap( fp )
+    chap2.opening_delay( fp )   # 本編開始終了の調整
     errLog( chap2.sprint("### final Chapter List" ))
-
-    chap2.opening_delay( fp )   # 本編開始の遅延
     chap2.dataDump( fp )
   else
     chap2 = Chap.new()

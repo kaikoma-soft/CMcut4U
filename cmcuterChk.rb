@@ -1,4 +1,4 @@
-#!/usr/bin/ruby 
+#!/usr/bin/ruby
 # -*- coding: utf-8 -*-
 #
 #
@@ -11,7 +11,7 @@ require_relative 'lib/common.rb'
 require_relative 'lib/Chap.rb'
 require_relative 'lib/FilePara.rb'
 
-
+require_relative 'lib/_override.rb'
 
 class CmCuterChk
 
@@ -20,7 +20,7 @@ class CmCuterChk
     attr_accessor :tfc, :comment
     attr_accessor :err
     attr_accessor :duration
-    
+
     @@st = Struct.new("Epi",
                       :fname,     # file name
                       :epiNum,    # 話数
@@ -46,7 +46,7 @@ class CmCuterChk
       printf("\n>>>>>  %s  <<<<<<<\n",dir )
       printf(" ( %s )\n", comment ) if comment != nil
       puts
-      
+
       printf("No       Name    mp4 chap   duration      result\n")
       i = 1
       self.each do |b|
@@ -64,21 +64,21 @@ class CmCuterChk
               gosa2 = y
             end
           end
-          
+
           if b.honpen != 0 and gosa1 > 1
             honpen += sprintf("(%+d)",gosa2 )
           end
         end
 
         res = b.res == nil ? "" : b.res
-        
+
         printf("%2d %10s     %s   %2s     %-14s %s\n",
                i, b.epiNum, mp4, chapNum, honpen, res )
         i += 1
       end
     end
 
-    
+
     def getStatus( fname )
       self.each do |tmp|
         if tmp.fname == fname
@@ -88,7 +88,7 @@ class CmCuterChk
       nil
     end
 
-    
+
   end
 
 
@@ -127,22 +127,22 @@ class CmCuterChk
       result = nil
       fc = 0                      # fail count
       tc = 0                      # test count
-      
+
       if test( ?f, mp4fn )
         mp4 = true
       else
         fc += 1 if $opt[:test] == false
       end
-      
+
       # 話数の抽出
       wa = fname
-      if fname =~ /第(\d+)(話|番)/     # 
+      if fname =~ /第(\d+)(話|番)/     #
         wa = $1
-      elsif fname =~ /第([一二三四五六七八九十]+)(話|番)/     # 
+      elsif fname =~ /第([一二三四五六七八九十]+)(話|番)/     #
         wa = $1
-      elsif fname =~ /\#(\d+)/     # 
+      elsif fname =~ /\#(\d+)/     #
         wa = $1
-      elsif fname =~ /(\d+)$/     # 
+      elsif fname =~ /(\d+)$/     #
         wa = $1
       elsif fname =~ /([\-\d\.]+)/
         wa = $1
@@ -154,23 +154,26 @@ class CmCuterChk
       if fp.chapNum != nil and fp.chapNum.size > 0
         comment = sprintf("chapNum=%s", fp.chapNum.join(",") )
       end
-      if fp.duration != nil and fp.duration.size > 0 
+      if fp.duration != nil and fp.duration.size > 0
         comment += sprintf(", duration=%s", fp.duration.join(",") )
       end
-      
+
       if test( ?f, chapfn )
         chap.restore( chapfn )
         hon = chap.getHonPenTime()
-        if fp.opening_delay != nil
-          hon += fp.opening_delay
-        end
+        # if fp.opening_delay != nil
+        #   hon -= fp.opening_delay
+        # end
+        # if fp.closeing_delay != nil
+        #   hon += fp.closeing_delay
+        # end
         chap2 = chap.size == 0 ? nil : chap.size
 
         if fp.chapNum != nil and fp.chapNum.size > 0
           fc += 1 unless fp.chapNum.include?( chap2 )
           tc += 1
         end
-        if fp.duration != nil and fp.duration.size > 0 
+        if fp.duration != nil and fp.duration.size > 0
           tc += 1
           flag = false
           fp.duration.each do |d|
@@ -186,7 +189,7 @@ class CmCuterChk
       else
         result = "-"
       end
-      
+
       if fc > 0
         result = "NG" if result == nil
         tfc += 1
@@ -205,7 +208,7 @@ class CmCuterChk
 end
 
 
-  
+
 if File.basename($0) == "cmcuterChk.rb"
   $: << File.dirname( $0 )
 
@@ -213,7 +216,7 @@ if File.basename($0) == "cmcuterChk.rb"
 
   logotable = Common::loadLogoTable()
 
-  
+
   #
   #  対象番組の検索
   #

@@ -1,4 +1,4 @@
-#!/usr/local/bin/ruby 
+#!/usr/local/bin/ruby
 # -*- coding: utf-8 -*-
 #
 
@@ -14,8 +14,8 @@ class Chap < Array
 
   @@st = Struct.new(:time,      # 秒数
                     :type,      # タイプ
-                    :width)     # 次chap までの幅 
-  
+                    :width)     # 次chap までの幅
+
   include Common
 
   def initialize()
@@ -29,21 +29,21 @@ class Chap < Array
   def setcmDataFlag()
     @cmDataFlag = true          # CM データを保存する
   end
-  
+
   def setMtime( t )
     @mtime = t
   end
 
   # 最低限の状態にセットする。
   def init( last, type = :HON )
-    if type != :HON 
+    if type != :HON
       setcmDataFlag()
     end
     add( 0, 0 )
     add( last, -1 )
     self
   end
-  
+
   def add(  time, logo )
     logo2 = case logo
             when 0 then :CM
@@ -78,7 +78,7 @@ class Chap < Array
   def getLastTime()
     self.last.time
   end
-  
+
   def getStartTime( c )
     t = c.time
     t = 0.0 if t < 0.0
@@ -125,7 +125,7 @@ class Chap < Array
     calcWidth()
   end
 
-  
+
   #
   #  小さい :CM は、削除
   #
@@ -144,7 +144,7 @@ class Chap < Array
       self.delete(d)
     end
 
-    delSame()    
+    delSame()
 
   end
 
@@ -180,7 +180,7 @@ class Chap < Array
         end
       end
     end
-    
+
     if @duration != nil and @duration != 0
       spc = "                      "
       bar = "------------------"
@@ -209,7 +209,6 @@ class Chap < Array
   #  data のダンプ
   #
   def dataDump( fpara )
-
     fname = fpara.chapfn
     makePath( fname )
     opening = true
@@ -218,7 +217,7 @@ class Chap < Array
            type = case s.type
                   when :CM     then  "CM"
                   when :HonPen then  "HonPen"
-                  when :EOF    then "EOF"
+                  when :EOF    then  "EOF"
                   else
                     p s.type
                     raise
@@ -231,20 +230,32 @@ class Chap < Array
   end
 
   #
-  #  opening_delay オプションの処理
+  #  opening,closeing delay オプションの処理
   #
   def opening_delay( fp )
 
-    return if fp.opening_delay == nil
-    self.each do |s|
-      if s.type == :HonPen
-        s.time += fp.opening_delay
-        break
+    if fp.opening_delay != nil
+      self.each do |s|
+        if s.type == :HonPen
+          s.time += fp.opening_delay
+          break
+        end
       end
     end
+    if fp.closeing_delay != nil
+      prev = nil
+      self.reverse.each do |s|
+        if s.type == :HonPen
+          prev.time += fp.closeing_delay
+          break
+        end
+        prev = s
+      end
+    end
+    calcWidth()
   end
-  
-  
+
+
   #
   #  data のrestore
   #
@@ -265,7 +276,7 @@ class Chap < Array
                     raise
                     end
              if time =~ /(\d+):(\d+):([\d.]+)/
-               time = ( $1.to_f * 3600 + $2.to_f * 60 + $3.to_f ) 
+               time = ( $1.to_f * 3600 + $2.to_f * 60 + $3.to_f )
                add( time.round(2), type )
              end
            end
@@ -288,7 +299,7 @@ class Chap < Array
           ranges.add( prev.time, c.time )
         end
       end
-      prev = c 
+      prev = c
     end
     ranges
   end
@@ -302,7 +313,7 @@ class Chap < Array
     self.each_index do |i|
       c = self[i]
       next if ( d = self[i+1] ) == nil
-      
+
       if time.between?( c.time, d.time )
         if c.type == :CM
           self.insert( i+1, @@st.new( time+0.1, :CM, 0 ))
@@ -313,7 +324,7 @@ class Chap < Array
     end
     calcWidth()
   end
-  
+
   #
   #  ffmpeg meta情報ファイルを作成
   #
@@ -339,7 +350,7 @@ class Chap < Array
     end
 
     #pp buff
-    
+
     File.open( fp.metafn, "w" ) do |f|
       buff.each do |s|
         f.puts(s)
@@ -348,10 +359,5 @@ class Chap < Array
 
     fp.metafn
   end
-  
+
 end
-
-
-
-
-

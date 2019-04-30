@@ -178,7 +178,7 @@ tbl3.attach( ws[:opt_au], 0, 2, y, y+1, *$tblarg )
 
 ###
 y = 3
-label = " 長い無音期間の最後を境界にする"
+label = " 長い無音期間は、本編は最後、CMは先頭を境界にする"
 ws[:opt_ls] = Gtk::CheckButton.new( label )
 tbl3.attach( ws[:opt_ls], 0, 2, y, y+1, *$tblarg )
 
@@ -239,10 +239,23 @@ hbox = Gtk::HBox.new( false)
 label1 = Gtk::Label.new("本編の開始時間を")
 label2 = Gtk::Label.new("秒遅らせる")
 #tbl3.attach( label, 0, 1, y, y+1, *$tblarg )
-ws[:opt_delay] = Gtk::Entry.new
-ws[:opt_delay].set_size_request(50, -1)
+ws[:opt_odelay] = Gtk::Entry.new
+ws[:opt_odelay].set_size_request(50, -1)
 hbox.pack_start(label1, false, false, 10)
-hbox.pack_start(ws[:opt_delay], false, true, 0)
+hbox.pack_start(ws[:opt_odelay], false, true, 0)
+hbox.pack_start(label2, false, false, 5)
+tbl3.attach( hbox, 0, 3, y, y+1 )
+
+###
+y = 11
+hbox = Gtk::HBox.new( false )
+label1 = Gtk::Label.new("本編の終了時間を")
+label2 = Gtk::Label.new("秒遅らせる")
+#tbl3.attach( label, 0, 1, y, y+1, *$tblarg )
+ws[:opt_cdelay] = Gtk::Entry.new
+ws[:opt_cdelay].set_size_request(50, -1)
+hbox.pack_start(label1, false, false, 10)
+hbox.pack_start(ws[:opt_cdelay], false, true, 0)
 hbox.pack_start(label2, false, false, 5)
 tbl3.attach( hbox, 0, 3, y, y+1 )
 

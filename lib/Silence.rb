@@ -619,18 +619,28 @@ class Silence < Array
     lasttime = getLastTime()
 
     flag = false
+    count = 0
     self.each do |s|
       logo = s.flag == :HonPen ? 1 : 0
-      if logo != flag
-        if logo == 1
-          if ( s.end - s.start ) > 5 and fp.end_of_silent == true
+      w = s.end - s.start
+      mid = ( s.end + s.start ) / 2
+      if logo != flag           # 変化
+        if logo == 1            # 本編
+          if w > LongSilenceTime and fp.end_of_silent == true
             time = s.end - 0.5
+            count += 1
           else
             time = s.start + 0.5
           end
-        else
-          time = s.start == 0.0 ? s.start : s.end - 0.5
+        else                    # CM
+          #time = s.start == 0.0 ? s.start : s.end - 0.5
+          if w > LongSilenceTime and fp.end_of_silent == true
+            time = s.start + 0.5
+          else
+            time = s.end - 0.5
+          end
         end
+        time = 0.0 if time < 0
         chap.add( time, logo )
         flag = logo
       end

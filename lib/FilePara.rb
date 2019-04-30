@@ -15,7 +15,7 @@ class FilePara
   attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
   attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt
   attr_accessor :fade_inout, :end_of_silent, :ignore_check, :ignore_endcard
-  attr_accessor :opening_delay, :nhk_type
+  attr_accessor :opening_delay, :closeing_delay, :nhk_type
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -122,6 +122,11 @@ class FilePara
       @opening_delay = lt[ :opening_delay ].to_f # 本編開始の微調整
     else
       @opening_delay = nil
+    end
+    if lt[ :closeing_delay ] != nil
+      @closeing_delay = lt[ :closeing_delay ].to_f # 本編終了の微調整
+    else
+      @closeing_delay = nil
     end
     
     #@duration = lt[ :duration ]
