@@ -55,14 +55,16 @@ def wavAnalysis( wavfn: nil ,wavratio: 4410, th: 5.0 )
         zs = f if zs == nil    # start
       else
         if zs != nil
-          if ( f - zs ) > ( th2 )   # th 秒以上
+          if ( f - zs ) > th2   # th 秒以上
             lap = ""
             if prev != nil
               lap = "(" + f2min( f - prev,1 ) + ")"
             end
             mid = (f + zs ) / 2
-            printf("%3d %s   %s\n", count,f2min( mid,1),lap)
-            r << mid.to_f / wavratio / 1
+            w =  ( f - zs ).to_f / wavratio
+            printf("%3d %s - %s - %s  %5.1f  %s\n",
+                   count,f2min( zs,1), f2min( mid,1), f2min( f,1), w,lap)
+            r << [ zs ,mid, f, w ]
             count += 1
             prev = f
           end
@@ -71,32 +73,6 @@ def wavAnalysis( wavfn: nil ,wavratio: 4410, th: 5.0 )
       end
       f += 1
     end
-  elsif format.channel == 2
-    0.step(wavs.size-1,2 ) do |j|
-      l = wavs[j]
-      r = wavs[j+1]
-
-      if l < 3 and r < 3   # 無音レベル
-        if zs == nil
-          zs = j
-        end
-      else
-        if zs != nil
-          if ( j - zs ) > th2
-            lap = ""
-            if prev != nil
-              lap = "(" + f2min( j - prev ) + ")"
-            end
-            mid = (j + zs ) / 2
-            printf("%3d %s   %s\n", count,f2min(mid),lap)
-            r << mid.to_f / wavratio / 2
-            count += 1
-            prev = j
-          end
-        end
-        zs = nil
-      end
-    end
   else
     raise
   end
@@ -104,6 +80,35 @@ def wavAnalysis( wavfn: nil ,wavratio: 4410, th: 5.0 )
 end
 
 
+def search( data, th, wavratio: 4410 )
+  r = []
+  count = 1
+  prev = nil
+  data.each do |tmp|
+    ( ts, tm, te, w ) = tmp
+    if w > th 
+      lap = ""
+      if prev != nil
+        if $opt[:c] == :mid 
+          lap = "(" + f2min( tm - prev,1 ) + ")"
+        else
+          lap = "(" + f2min( te - prev,1 ) + ")"
+        end
+      end
+      printf("%3d %s - %s - %s  %5.1f  %s\n",
+             count,f2min( ts,1), f2min( tm,1), f2min( te,1), w,lap)
+      count += 1
+      if $opt[:c] == :mid 
+        prev = tm
+        r << tm / wavratio
+      else
+        prev = te 
+        r << te / wavratio
+      end
+    end
+  end
+  r
+end
 
 
 #
@@ -182,7 +187,10 @@ $opt = {
   :sd  => false,                # silence detection
   :m   => 1.0,                  # マージン(秒)
   :th  => 5.0,                  # 検出する無音期間(秒)
-  :exec => false,               # --sd で分割の実行
+  :ts  => 2.0,                  # 探索開始 (--sd1指定時)
+  :te  => 6.0,                  # 探索終了 (--sd1指定時)
+  :tw  => 1.0,                  # 探索幅   (--sd1指定時)
+  :c   => :end,                 # 切り出し方 (:mid = 真ん中、:end = 端 )
 }
 
 OptionParser.new do |opt|
@@ -194,6 +202,11 @@ OptionParser.new do |opt|
   opt.on('--sd1')  { |v| $opt[:sd] = 1 }
   opt.on('--sd2')  { |v| $opt[:sd] = 2 }
   opt.on('--th n') { |v| $opt[:th] = v.to_f }
+  opt.on('--ts n') { |v| $opt[:ts] = v.to_f }
+  opt.on('--te n') { |v| $opt[:te] = v.to_f }
+  opt.on('--tw n') { |v| $opt[:tw] = v.to_f }
+  opt.on('-e')     { |v| $opt[:c] = :end }
+  opt.on('-M')     { |v| $opt[:c] = :mid }
   opt.parse!(ARGV)
 end
 
@@ -206,6 +219,9 @@ unless test(?f, infile )
   exit
 end
 
+#
+#  無音期間でカットの前処理
+#
 if $opt[:sd] != false
   if infile =~ /\.ts$/
     # wav に変換
@@ -234,19 +250,30 @@ end
 sdata = []                      
 if wavfn != nil
 
+  yamlfn = wavfn.sub(/\.wav$/,'.yaml')
+  if test(?f, yamlfn )
+    data = YAML.load_file( yamlfn )
+  else
+    data = wavAnalysis( wavfn: wavfn, wavratio: wav[:ratio], th: 1.0 )
+    File.open( yamlfn,"w") do |fp|
+      fp.puts YAML.dump( data )
+    end
+  end
+    
   if $opt[:sd] == 1
-    [ 2.0, 2.5, 3.0, 3.5, 4.0, 5.0 ].each do |th|
-      printf("--th = %.1f\n",th.round(1) )
-      wavAnalysis( wavfn: wavfn, wavratio: wav[:ratio], th: th )
+    $opt[:ts].step( $opt[:te], $opt[:tw])  do |th|
+      printf("--th %.1f\n",th.round(1) )
+      printf(" No    start        mid           end     width      lap\n")
+      search( data, th )
       puts("")
     end
     puts("--sd2 と --th X.X を指定して、再度実行して下さい。")
     exit
   elsif $opt[:sd] == 2
-    data = wavAnalysis( wavfn: wavfn, wavratio: wav[:ratio], th: $opt[:th] )
-    data << wav[:duration2] if data.size > 0
+    data2 = search( data, $opt[:th] )
     st = 0
-    data.each_with_index do |d,n|
+    data2 << wav[:duration2] if data2.size > 0
+    data2.each_with_index do |d,n|
       sdata << [ st.round(1), (d + $opt[:m] - st ).round(1)]
       st = d - $opt[:m]
     end

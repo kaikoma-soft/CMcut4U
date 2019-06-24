@@ -249,7 +249,9 @@ def calc( para, parent )
     end
     
     fp = FilePara.new( fn )
-    fp.setLogoTable( logotable[ fp.dir ], fp.dir )
+    if fp.setLogoTable( logotable[ fp.dir ], fp.dir ) == nil
+      raise
+    end
     $cmcutLog = fp.cmcutLog
     $para[:fp] = fp
 

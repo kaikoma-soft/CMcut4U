@@ -133,7 +133,7 @@ def cmcutCalc( fp, force = false )
     if fp.nhk_type == true
       sdata.calcDis()
       errLog( sdata.sprint("### 1st adj"))
-      mark0 = sdata.marking0()
+      mark0 = sdata.marking0( fp.mark0_stime )
       errLog( sdata.sprint("### 2nd adj"))
     end
 

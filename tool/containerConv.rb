@@ -63,7 +63,7 @@ if test( ?f, iname )
     arg = %W( ffmpeg -y -analyzeduration 100M -probesize 100M -i )
     arg << iname
     arg += %w( -map 0:0 -map 0:1 )
-    arg += %W( -c:v copy -c:a copy -f #{f} )
+    arg += %W( -c:v copy -c:a copy -bsf:a aac_adtstoasc -f #{f} )
     arg << oname
     #p arg
     system( *arg )

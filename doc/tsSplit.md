@@ -89,6 +89,6 @@ ffmpeg -loglevel fatal -hide_banner -i foo.ts -vn -ac 1 -ar 4410 -acodec pcm_s16
 
 --sd2 と --th X.X を指定して、再度実行して下さい。
 
-% tsSplit.rb --sd2  foo.ts --th  3.5
+% tsSplit.rb --sd2 foo.ts --th 3.5
 
 ```

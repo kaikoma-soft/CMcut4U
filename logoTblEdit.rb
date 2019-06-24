@@ -172,35 +172,46 @@ tbl3.attach( ws[:opt_cs], 0, 2, y, y+1, *$tblarg )
 
 ###
 y = 2
-label = " logo解析は行わず音声データのみでチャプター分割を行う"
-ws[:opt_au] = Gtk::CheckButton.new( label )
-tbl3.attach( ws[:opt_au], 0, 2, y, y+1, *$tblarg )
-
-###
-y = 3
-label = " 長い無音期間は、本編は最後、CMは先頭を境界にする"
-ws[:opt_ls] = Gtk::CheckButton.new( label )
-tbl3.attach( ws[:opt_ls], 0, 2, y, y+1, *$tblarg )
-
-###
-y = 4
-label = " 本編途中にCMが無く、本編前後に長い無音期間がある"
-ws[:opt_nhk] = Gtk::CheckButton.new( label )
-tbl3.attach( ws[:opt_nhk], 0, 2, y, y+1, *$tblarg )
-
-
-###
-y = 5
 label = " cmcuterChk の対象外とする"
 ws[:opt_ic] = Gtk::CheckButton.new( label )
 tbl3.attach( ws[:opt_ic], 0, 2, y, y+1, *$tblarg )
 
 
 ###
-y = 6
+y = 3
 label = " EndCard 検出を無効化"
 ws[:opt_ec] = Gtk::CheckButton.new( label )
 tbl3.attach( ws[:opt_ec], 0, 2, y, y+1, *$tblarg )
+
+###
+y = 4
+label = " logo解析は行わず音声データのみでチャプター分割を行う"
+ws[:opt_au] = Gtk::CheckButton.new( label )
+tbl3.attach( ws[:opt_au], 0, 2, y, y+1, *$tblarg )
+
+###
+y = 5
+label = " 長い無音期間は、本編は最後、CMは先頭を境界にする"
+ws[:opt_ls] = Gtk::CheckButton.new( label )
+tbl3.attach( ws[:opt_ls], 0, 2, y, y+1, *$tblarg )
+
+###
+y = 6
+
+hbox = Gtk::HBox.new( false )
+label0 = " 本編途中にCMが無く、本編前後に長い無音期間がある。"
+label1 = Gtk::Label.new("検出する無音期間")
+label2 = Gtk::Label.new("秒以上")
+ws[:opt_mk0stime] = Gtk::Entry.new
+ws[:opt_mk0stime].set_size_request(50, -1)
+
+hbox.pack_start(label1, false, false, 10)
+hbox.pack_start(ws[:opt_mk0stime], false, true, 0)
+hbox.pack_start(label2, false, false, 5)
+
+ws[:opt_nhk] = Gtk::CheckButton.new( label0 )
+tbl3.attach( ws[:opt_nhk], 0, 2, y, y+1, *$tblarg )
+tbl3.attach( hbox        , 2, 3, y, y+1, *$tblarg )
 
 ###
 y = 7
@@ -231,7 +242,7 @@ label = Gtk::Label.new("ffmpeg vopt")
 tbl3.attach( label, 0, 1, y, y+1, *$tblarg )
 ws[:opt_vopt] = Gtk::Entry.new
 ws[:opt_vopt].set_size_request(400, -1)
-tbl3.attach( ws[:opt_vopt], 1, 2, y, y+1, *$tblarg )
+tbl3.attach( ws[:opt_vopt], 1, 3, y, y+1, *$tblarg )
 
 ###
 y = 10

@@ -15,7 +15,7 @@ class FilePara
   attr_accessor :fixfn, :metafn, :cutSkip, :chapHash
   attr_accessor :monolingual, :audio_only, :ffmpeg_vfopt
   attr_accessor :fade_inout, :end_of_silent, :ignore_check, :ignore_endcard
-  attr_accessor :opening_delay, :closeing_delay, :nhk_type
+  attr_accessor :opening_delay, :closeing_delay, :nhk_type, :mark0_stime
   
   def initialize( ts )
     @tsfn  = ts                 # TS file name
@@ -127,6 +127,11 @@ class FilePara
       @closeing_delay = lt[ :closeing_delay ].to_f # 本編終了の微調整
     else
       @closeing_delay = nil
+    end
+    if lt[ :mark0_stime ] != nil
+      @mark0_stime = lt[:mark0_stime].to_f # mark0 の無音期間の長さ
+    else
+      @mark0_stime = 2.0
     end
     
     #@duration = lt[ :duration ]

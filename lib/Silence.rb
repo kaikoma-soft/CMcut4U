@@ -293,9 +293,9 @@ class Silence < Array
   #
   #  本編途中に CM が無く、両端に無音期間ある筈
   #
-  def marking0()
+  def marking0( stime = 2.0 )
+    #p stime
     st = et = nil
-    stime = 1.4 #2.5                 # 無音期間
     last = getLastTime()
     maxw = -1
     self.each_index do |n|
@@ -321,7 +321,10 @@ class Silence < Array
         end
       end
     end
-    if self[st].start < 60 and  et != nil
+    if et == nil
+      pp et = self.size - 1
+    end
+    if st != nil and et != nil
       0.upto( self.size - 2 ) do |n|
         if self[n].flag == nil
           if n < st
@@ -478,6 +481,7 @@ class Silence < Array
   #  半端な時間か？
   #
   def hanpa?( time )
+    return false if time > 10
     t = time.to_f % 10
     return false if t.between?( 0.0, 1.0 )
     return false if t.between?( 4.5, 5.5 )
@@ -521,7 +525,7 @@ class Silence < Array
   #
   def marking4(  )
       
-    # 最後の方の半端な時間は CM とする。
+    # 最後の方の未確定で半端な時間は CM とする。
     ( self.size - 2).downto( self.size - 10 ) do |n|
       a = self[n]
       if a != nil
@@ -553,6 +557,20 @@ class Silence < Array
         addComment( a, "mark4b" )
       end
       n += 1
+    end
+
+    # 次の番組の先頭部分を強制的に CM に
+    ( self.size - 1).downto( self.size - 4 ) do |n|
+      a = self[n]
+      if a != nil
+        if a.flag == :HonPen and a.dis < 5.0 
+          b = self[n-1]
+          if b.flag == :CM
+            a.flag = :CM
+            addComment( a, "mark4c" )
+          end
+        end
+      end
     end
     
   end
