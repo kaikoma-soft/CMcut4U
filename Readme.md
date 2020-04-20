@@ -1,4 +1,10 @@
 
+## お知らせ
+
+本ソフトウエアは、開発中止とします。
+後継は、改良版である
+[CMcut4U2](https://github.com/kaikoma-soft/CMcut4U-Mk2) です。
+
 
 ## 背景
 
