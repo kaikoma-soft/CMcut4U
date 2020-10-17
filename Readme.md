@@ -70,7 +70,7 @@ Outdir で指定したディレクトリに mp4 ファイルを出力します�
 
 
 詳細は、
-[作者 WEB ページ](http://www.asahi-net.or.jp/~sy8y-siy/CMcut_on_Unix/)
+[作者 WEB ページ](https://kaikoma-soft.github.io/src/CMcut4U.html)
 を参照して下さい。
 
 + [インストール](http://www.asahi-net.or.jp/~sy8y-siy/CMcut_on_Unix/#インストール)
